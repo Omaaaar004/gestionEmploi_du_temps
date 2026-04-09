@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Local;
+use App\Models\Zone;
 use Illuminate\Http\Request;
 
 class localController extends Controller
@@ -11,7 +13,8 @@ class localController extends Controller
      */
     public function index()
     {
-        //
+        $locals = Local::with('zone')->get();
+        return view('locals.index', compact('locals'));
     }
 
     /**
@@ -19,7 +22,8 @@ class localController extends Controller
      */
     public function create()
     {
-        //
+        $zones = Zone::all();
+        return view('locals.create', compact('zones'));
     }
 
     /**
@@ -27,7 +31,13 @@ class localController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        Local::create([
+            'nom' => $request->nom_local,
+            'capacite' => $request->capacite,
+            'zone_id' => $request->zone_id
+        ]);
+
+        return redirect()->route(locals.index)->with('success', 'Local ajouté');
     }
 
     /**
@@ -43,7 +53,9 @@ class localController extends Controller
      */
     public function edit(string $id)
     {
-        //
+        $local = Local::findOrFail($id);
+        $zones = Zone::al();
+        return view('locals.edit', compact('locals', 'zones'));
     }
 
     /**
@@ -51,7 +63,12 @@ class localController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+        $local = Local::findOrFail($id);
+        $local->nom_local = $request->nom_local;
+        $local->capacite = $request->capacite;
+        $local->zone_id = $request->zone_id;
+        $local->save();
+        return redirect()->route(locals.index)->with('success', 'Local modifié !') ;
     }
 
     /**
@@ -59,6 +76,7 @@ class localController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        Local::findOrFail($id)->delete();
+        return redirect()->route('locals.index')->with('success', 'Local supprimé !');
     }
 }

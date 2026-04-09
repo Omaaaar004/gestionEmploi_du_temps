@@ -1,7 +1,7 @@
 <?php
 
 namespace App\Http\Controllers;
-
+use App\Models\Composante;
 use Illuminate\Http\Request;
 
 class composanteController extends Controller
@@ -11,7 +11,8 @@ class composanteController extends Controller
      */
     public function index()
     {
-        //
+        $composantes = Composante::all();
+        return view('composantes.index', compact('composantes'));
     }
 
     /**
@@ -19,7 +20,7 @@ class composanteController extends Controller
      */
     public function create()
     {
-        //
+        return view('composantes.create');
     }
 
     /**
@@ -27,7 +28,11 @@ class composanteController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        Composante::create([
+            'nom' => $request->nom,
+            'adresse' => $request->adresse,
+        ]);
+        return redirect()->route('composantesr.index')->with('success','Composante Ajoutée !');
     }
 
     /**
@@ -43,7 +48,8 @@ class composanteController extends Controller
      */
     public function edit(string $id)
     {
-        //
+        $composante = Composante::findOrFail($id);
+        return view('composantes.edit',compact('composante'));
     }
 
     /**
@@ -51,7 +57,11 @@ class composanteController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+        $composante = Composante::findOrFail($id);
+        $composante->nom = $request->nom;
+        $composante->adresse = $request->adresse;
+        $composante->save();
+        return redirect()->route('composantes.index')->with('success','Composante modifiée !'); 
     }
 
     /**
@@ -59,6 +69,7 @@ class composanteController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        Composite::findOrFail($id)->delete();
+        return redirect()->route('composante.index')->with('success','Composante supprimée !');
     }
 }

@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Filiere;
+use App\Models\Departement;
 use Illuminate\Http\Request;
 
 class filiereController extends Controller
@@ -11,7 +13,8 @@ class filiereController extends Controller
      */
     public function index()
     {
-        //
+        $filieres = Filieres::with('departement')->get();
+        return view('filieres.index',compact('filieres'));
     }
 
     /**
@@ -19,7 +22,9 @@ class filiereController extends Controller
      */
     public function create()
     {
-        //
+       $departements = Departement::all();
+       return view('filieres.create',compact('departements'));
+
     }
 
     /**
@@ -27,7 +32,13 @@ class filiereController extends Controller
      */
     public function store(Request $request)
     {
-        //
+         Filiere::create([
+            'nom' => $request->nom,
+            'type_formation' => $request->type_formation,
+            'departement_id' => $request->departement_id
+        ]);
+
+        return redirect()->route('filieres.index')->with('success', 'Filière ajoutée !');
     }
 
     /**
@@ -43,7 +54,9 @@ class filiereController extends Controller
      */
     public function edit(string $id)
     {
-        //
+        $filiere = Filiere::findOrFail($id);
+        $departements = Departement::all();
+        return view('filieres.edit', compact('filiere','departements'));
     }
 
     /**
@@ -51,7 +64,12 @@ class filiereController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+        $filiere = Filiere::findOrFail($id);
+        $filiere->nom = $request->nom;
+        $filiere->type_formation = $request->type_formation;
+        $filiere->save();
+        
+        return redirect()->route('filieres.index')->with('success', 'Filière modifiée');
     }
 
     /**
@@ -59,6 +77,7 @@ class filiereController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        Filiere::findOrFail($id)->delete();
+        return redirect()->route('filieres.index')->with('success', 'Filière supprimée');
     }
 }

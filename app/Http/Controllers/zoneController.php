@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Zone;
 use Illuminate\Http\Request;
 
 class zoneController extends Controller
@@ -11,7 +12,8 @@ class zoneController extends Controller
      */
     public function index()
     {
-        //
+        $zone = Zone::all();
+        return view('zones.index',compact('zones'));
     }
 
     /**
@@ -19,7 +21,7 @@ class zoneController extends Controller
      */
     public function create()
     {
-        //
+        return view('zones.create');
     }
 
     /**
@@ -27,7 +29,12 @@ class zoneController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        Zone::create([
+            'nom' => $request->nom_zone,
+            'code' => $request->code_zone,
+            'description' => $request->description
+        ]);
+        return redirect()->route('zones.index')->with('success','Zone ajoutée');
     }
 
     /**
@@ -35,7 +42,7 @@ class zoneController extends Controller
      */
     public function show(string $id)
     {
-        //
+        
     }
 
     /**
@@ -43,7 +50,8 @@ class zoneController extends Controller
      */
     public function edit(string $id)
     {
-        //
+        $zone = Zone::FindOrFail($id);
+        return view('zones.edit', compact()); 
     }
 
     /**
@@ -51,7 +59,12 @@ class zoneController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+        $zone = Zone::findOrfail($id);
+        $zone->nom = $request->nom_zone;
+        $zone->code = $request->code_zone;
+        $zone->description = $request->description;
+        $zone->save();
+        return redirect()->route('zones.index')->with('succcess','Zone modifiée !');
     }
 
     /**
@@ -59,6 +72,7 @@ class zoneController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        Zone::findOrFail($id)->delete();
+        return redirect->route('zones.index')->with('success','Zone supprimée !');
     }
 }

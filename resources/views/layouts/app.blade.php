@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gesrion Emploi du temps - UMP</title>
+    <title>Gestion d'Emploi du temps - UMP</title>
     <style>
         *{
             margin: 0;
@@ -133,6 +133,81 @@
         .card-header h2{
             font-size: 18px;
             color: #1a237e;
+        }
+        /* buttons */
+        .btn{
+            padding: 8px;
+            border: none;
+            border-radius: 6px;
+            font-size: 14px;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            transition: all 0.3s;
+        }
+        .btn-primary{
+            background: #1a237e;
+            color: white;
+        }
+        .btn-primary:hover{
+            background: #5765cf;
+        }
+        .btn-danger{
+            background: #e53935;
+            color: white;
+        }
+        .btn-danger:hover{
+            background: #c62828;
+        }
+        .btn-success{
+            background: #43a047;
+            color: white;
+        }
+        /* table */
+        table{
+            width :100%;
+            border-collapse: collapse;
+        }
+        table th{
+            background: #f5f5f5;
+            padding: 12px 15px;
+            text-align: left;
+            color: #555;
+            border-bottom: 2px solid #eee;
+        }
+        table td{
+            padding: 12px 15px;
+            font-size: 14px;
+            color: #333;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        table tr:hover{
+            background: #f9f9f9;
+        }
+        /* form */
+        .form-group{
+            margin-bottom: 20px;
+        }
+        .form-group label{
+            display: block;
+            margin-bottom: 8px;
+            font-size: 14px;
+            color: #555;
+            font-weight: 500;
+        }
+        .form-group input,
+        .form-group select{
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 14px;
+            transition: border 0.3s;
+        }
+        .form-group input:focus,
+        .form-group select:focus{
+            outline: none;
+            border-color: #1a237e;
         }
         /* alerts*/
         .alert{

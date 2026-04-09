@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Departement;
+use App\Models\Composante;
 use Illuminate\Http\Request;
 
 class departementController extends Controller
@@ -11,7 +13,8 @@ class departementController extends Controller
      */
     public function index()
     {
-        //
+        $departements = Departement::with('composante')->get();
+        return view('departement.index', compact('departements'));
     }
 
     /**
@@ -19,7 +22,8 @@ class departementController extends Controller
      */
     public function create()
     {
-        //
+        $composantes = Composante::all();
+        return view('departements.create',compact('composantes')); 
     }
 
     /**
@@ -27,7 +31,11 @@ class departementController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        Departement::create([
+            'nom' => $request->nom,
+            'composante_id' => $request->composante_id
+        ]);
+        return redirect()->route('departements.index')->with('success','Departement ajouté !');
     }
 
     /**
@@ -43,7 +51,9 @@ class departementController extends Controller
      */
     public function edit(string $id)
     {
-        //
+        $departement = Departement::findOrFail($id);
+        $composantes = Composante::all();
+        return view('departements.edit', compact('departement','composantes'));
     }
 
     /**
@@ -51,7 +61,10 @@ class departementController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+        $departement = Departement::findOrFail($id);
+        $departement->nom = $request->nom;
+        $departement->composante_id = $request->composante_id;
+        return redirect()->route('composantes.index')->with('success','Departement modifié !');
     }
 
     /**
@@ -59,6 +72,7 @@ class departementController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        Departement::findOrFail($id)->delete();
+        return redirect()->route('departements.index')->with('success', 'Departement Supprimé');
     }
 }

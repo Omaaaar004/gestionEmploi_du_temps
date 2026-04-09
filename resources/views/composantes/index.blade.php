@@ -1,22 +1,45 @@
 @extends('layouts.app')
-@section('title', 'Composantes')
-@section('content')
 
+@section('title','Composantes')
+
+@section('content')
 <div class="card">
     <div class="card-header">
-        <a href="{{ route('composante.index') }}" class="btn btn-primary">← Retour</a>
+        <h2>Liste des Composantes</h2>
+        <a href="{{ route('composantes.create') }}" class="btn btn-primary">+ Ajouter</a>
     </div>
-    <form action="{{ route('composantes.store') }}" method="POST">
-        @csrf
-        <div class="form-group">
-            <label>Nom</label>
-            <input type="text" name="nom" placeholder="Nom de la composantes" required>
-        </div>
-        <div class="form-group">
-            <label>Adresse</label>
-            <input type="text" name="adresse" placeholder="Adresse">
-        </div>
-        <button type="submit" class="btn btn-primary">Enregistrer</button>
-    </form>
+    <table>
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Nom</th>
+                <th>Adresse</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @forelse($composantes as $composante)
+            <tr>
+                <td>{{ $composante->id }}</td>
+                <td>{{ $composante->nom }}</td>
+                <td>{{ $composante->adresse}}</td>
+                <td>
+                    <a href="{{ route('composantes.edit', $composante->id) }}" class="btn btn-primary">✏️</a>
+                    <form action="{{ route('composantes.destroy', $composante->id) }}" method="POST" style="display: inline">
+                        @crsf
+                        @method('DELETE')
+                        <button class="btn btn-danger">🗑️</button>
+                    </form>
+                </td>
+            </tr>
+            <tr>
+                @empty
+                <td colspan="4" style="text-align: center; color: #999; padding: 20px;">
+                    Aucune composante trouvée
+                </td>
+            </tr>
+            @endforelse
+        </tbody>
+    </table>
 </div>
 @endsection
