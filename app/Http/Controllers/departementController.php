@@ -31,6 +31,10 @@ class departementController extends Controller
      */
     public function store(Request $request)
     {
+        $request->validate([
+        'nom' => 'required|string|max:255',
+        'composante_id' => 'required|exists:composantes,id',
+    ]);
         Departement::create([
             'nom' => $request->nom,
             'composante_id' => $request->composante_id
@@ -61,6 +65,10 @@ class departementController extends Controller
      */
     public function update(Request $request, string $id)
     {
+        $request->validate([
+        'nom' => 'required|string|max:255',
+        'composante_id' => 'required|exists:composantes,id',
+    ]);
         $departement = Departement::findOrFail($id);
         $departement->nom = $request->nom;
         $departement->composante_id = $request->composante_id;

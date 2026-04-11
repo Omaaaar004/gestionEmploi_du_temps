@@ -1,10 +1,18 @@
 @extends('layouts.app')
 
 
-@section('title', 'Composantes')
+@section('title', 'Ajouter composante')
 
 
 @section('content')
+
+@if($errors->any())
+    <div class="alert alert-danger">
+        @foreach($errors->all() as $error)
+            <p>❌ {{ $error }}</p>
+        @endforeach
+    </div>
+@endif
 <div class="card">
     <div class="card-header">
         <a href="{{ route('composantes.index') }}" class="btn btn-primary">← Retour</a>
@@ -13,7 +21,7 @@
         @csrf
         <div class="form-group">
             <label>Nom</label>
-            <input type="text" name="nom" placeholder="Nom de la composantes" required>
+            <input type="text" name="nom" placeholder="Nom de la composantes" >
         </div>
         <div class="form-group">
             <label>Adresse</label>

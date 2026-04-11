@@ -31,6 +31,11 @@ class localController extends Controller
      */
     public function store(Request $request)
     {
+        $request->validate([
+        'nom' => 'required|string|max:255',
+        'capacite' => 'nullable|integer',
+        'zone_id' => 'required|exists:zones,id',
+    ]);
         Local::create([
             'nom' => $request->nom_local,
             'capacite' => $request->capacite,
@@ -63,6 +68,11 @@ class localController extends Controller
      */
     public function update(Request $request, string $id)
     {
+        $request->validate([
+        'nom' => 'required|string|max:255',
+        'capacite' => 'nullable|integer',
+        'zone_id' => 'required|exists:zones,id',
+    ]);
         $local = Local::findOrFail($id);
         $local->nom_local = $request->nom_local;
         $local->capacite = $request->capacite;

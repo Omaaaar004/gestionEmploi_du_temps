@@ -6,9 +6,9 @@
 <div class="card">
     <div class="card-header">
         <h2>Modifier la composante</h2>
-        <a href="{{ route('composante.index') }}">← Retour</a>
+        <a href="{{ route('composantes.index') }}">← Retour</a>
     </div>
-    <form action="{{ route('composante.update', $composante->id) }}" method="POST">
+    <form action="{{ route('composantes.update', $composante->id) }}" method="POST">
         @csrf
         @method('PUT')
         <div class="form-group">
@@ -21,3 +21,4 @@
         <button type="submit" class="btn btn-primary">💾 Enregistrer les modifications</button>
     </form>
 </div>
+@endsection

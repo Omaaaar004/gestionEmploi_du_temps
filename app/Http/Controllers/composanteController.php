@@ -28,11 +28,15 @@ class composanteController extends Controller
      */
     public function store(Request $request)
     {
+        $request->validate([
+        'nom' => 'required|string|max:255',
+        'adresse' => 'nullable|string|max:255',
+    ]);
         Composante::create([
             'nom' => $request->nom,
             'adresse' => $request->adresse,
         ]);
-        return redirect()->route('composantesr.index')->with('success','Composante Ajoutée !');
+        return redirect()->route('composantes.index')->with('success','Composante Ajoutée !');
     }
 
     /**
@@ -56,7 +60,11 @@ class composanteController extends Controller
      * Update the specified resource in storage.
      */
     public function update(Request $request, string $id)
-    {
+    {   
+        $request->validate([
+        'nom' => 'required|string|max:255',
+        'adresse' => 'nullable|string|max:255',
+    ]);
         $composante = Composante::findOrFail($id);
         $composante->nom = $request->nom;
         $composante->adresse = $request->adresse;
@@ -69,7 +77,7 @@ class composanteController extends Controller
      */
     public function destroy(string $id)
     {
-        Composite::findOrFail($id)->delete();
-        return redirect()->route('composante.index')->with('success','Composante supprimée !');
+        Composante::findOrFail($id)->delete();
+        return redirect()->route('composantes.index')->with('success','Composante supprimée !');
     }
 }

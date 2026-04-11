@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Prof;
+use App\Models\Departement;
 use Illuminate\Http\Request;
 
 class profController extends Controller
@@ -11,7 +13,8 @@ class profController extends Controller
      */
     public function index()
     {
-        //
+        $profs = prof::with('departement')->get();
+        return view('profs.index', compact('profs'));
     }
 
     /**
@@ -19,7 +22,8 @@ class profController extends Controller
      */
     public function create()
     {
-        //
+        $departements = Departement::all();
+        return view('profs.create',compact('departements'));
     }
 
     /**
@@ -27,7 +31,21 @@ class profController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $request->validate([
+        'nom' => 'required|string|max:255',
+        'prenom' => 'required|string|max:255',
+        'specialite' => 'nullable|string|max:255',
+        'email' => 'nullable|email|unique:profs,email',
+        'departement_id' => 'required|exists:departements,id',
+    ]);
+        Prof::create([
+            'nom' => $request->nom,
+            'prenom' => $request->prenom,
+            'specialite'=>$request->specialite,
+            'email' => $request->email,
+            'departement_id' => $request->departement_id 
+        ]);
+        return redirect()->route('profs.index')->with('success','Professeur ajouté(e) !');
     }
 
     /**
@@ -43,7 +61,9 @@ class profController extends Controller
      */
     public function edit(string $id)
     {
-        //
+        $prof = Prof::findOrFail($id);
+        $departements = Departement::all();
+        return view('profs.edit', compact('prof','departements'));
     }
 
     /**
@@ -51,7 +71,21 @@ class profController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+        $request->validate([
+        'nom' => 'required|string|max:255',
+        'prenom' => 'required|string|max:255',
+        'specialite' => 'nullable|string|max:255',
+        'email' => 'nullable|email|unique:profs,email',
+        'departement_id' => 'required|exists:departements,id',
+    ]);
+        $prof = Prof::finOrFail($id);
+        $prof->nom = $request->nom;
+        $prof->prenom = $request->prenom;
+        $prof->specialite = $request->specialite;
+        $prof->email = $request->email;
+        $prof->departement_id = $request->departement_id;
+        $prof->save();
+        return redirect()->route('profs.index')->with('success', 'Professeur modifié(e) !');
     }
 
     /**
@@ -59,6 +93,7 @@ class profController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        $prof = Prof::findOrFail($id)->delete();
+        return redirect()->route('profs.index')->with('success', 'Professeur supprimé(e) !');
     }
 }

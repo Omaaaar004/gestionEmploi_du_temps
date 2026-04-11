@@ -1,7 +1,8 @@
 <?php
 
 namespace App\Http\Controllers;
-
+use App\Models\Module;
+use App\Models\Etape;
 use Illuminate\Http\Request;
 
 class moduleController extends Controller
@@ -11,7 +12,8 @@ class moduleController extends Controller
      */
     public function index()
     {
-        //
+        $modules = Module::with('etape')->get();
+        return view('modules.index', compact('modules'));
     }
 
     /**
@@ -19,7 +21,8 @@ class moduleController extends Controller
      */
     public function create()
     {
-        //
+        $etapes = Etape::all();
+        return view('module.create', compact('etapes'));
     }
 
     /**
@@ -27,7 +30,15 @@ class moduleController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $request->validate([
+        'nom' => 'required|string|max:255',
+        'etape_id' => 'required|exists:etapes,id',
+    ]);
+        Module::create([
+            'nom' => $request->nom,
+            'etape_id' => $request->etape_id
+        ]);
+        return redirect()->route('modules.index')->with('success', 'Module ajouté !');
     }
 
     /**
@@ -43,7 +54,9 @@ class moduleController extends Controller
      */
     public function edit(string $id)
     {
-        //
+        $module = Module::findOrFail($id);
+        $etapes = Etape::all();
+        return view('modules.edit', compact('module','etapes'));
     }
 
     /**
@@ -51,7 +64,15 @@ class moduleController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+        $request->validate([
+        'nom' => 'required|string|max:255',
+        'etape_id' => 'required|exists:etapes,id',
+    ]);
+        $module = Module::findOrFail($id);
+        $module->nom = $request->nom;
+        $module->etape_id = $request->etape_id;
+        $module->save();
+        return redirect()-route('modules.index')->with('success', 'Module modifié !');
     }
 
     /**
@@ -59,6 +80,7 @@ class moduleController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        $module = Module::findOrFail($id)->delete();
+        return redirect()->route('modules.index')->with('success', 'Module supprimé !');
     }
 }

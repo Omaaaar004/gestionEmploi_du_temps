@@ -24,11 +24,11 @@
                 <td>{{ $composante->nom }}</td>
                 <td>{{ $composante->adresse}}</td>
                 <td>
-                    <a href="{{ route('composantes.edit', $composante->id) }}" class="btn btn-primary">✏️</a>
-                    <form action="{{ route('composantes.destroy', $composante->id) }}" method="POST" style="display: inline">
-                        @crsf
+                    <a href="{{ route('composantes.edit', $composante->id) }}" class="btn btn-primary">✏️ Modifier</a>
+                    <form action="{{ route('composantes.destroy', $composante->id) }}" method="POST" style="display: inline" onsubmit="return confirm('supprimer !')">
+                        @csrf
                         @method('DELETE')
-                        <button class="btn btn-danger">🗑️</button>
+                        <button class="btn btn-danger">🗑️ Supprimer</button>
                     </form>
                 </td>
             </tr>

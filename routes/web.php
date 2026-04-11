@@ -1,14 +1,14 @@
 <?php
 
 use Illuminate\Support\Facades\Routes;
-use App\Http\Controllers\composanteController;
-use App\Http\Controllers\zoneController;
-use App\Http\Controllers\localController;
-use App\Http\Controllers\departementController;
-use App\Http\Controllers\filiereController;
-use App\Http\Controllers\etapeController;
-use App\Http\Controllers\profController;
-use App\Http\Controllers\seanceController;
+use App\Http\Controllers\ComposanteController;
+use App\Http\Controllers\ZoneController;
+use App\Http\Controllers\LocalController;
+use App\Http\Controllers\DepartementController;
+use App\Http\Controllers\FiliereController;
+use App\Http\Controllers\EtapeController;
+use App\Http\Controllers\ProfController;
+use App\Http\Controllers\SeanceController;
 
 Route::get('/',function(){
     return view('layouts.app');

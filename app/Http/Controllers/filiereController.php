@@ -32,6 +32,11 @@ class filiereController extends Controller
      */
     public function store(Request $request)
     {
+        $request->validate([
+        'nom' => 'required|string|max:255',
+        'type_formation' => 'nullable|string|max:255',
+        'departement_id' => 'required|exists:departements,id',
+        ]);
          Filiere::create([
             'nom' => $request->nom,
             'type_formation' => $request->type_formation,
@@ -64,9 +69,15 @@ class filiereController extends Controller
      */
     public function update(Request $request, string $id)
     {
+          $request->validate([
+        'nom' => 'required|string|max:255',
+        'type_formation' => 'nullable|string|max:255',
+        'departement_id' => 'required|exists:departements,id',
+    ]);
         $filiere = Filiere::findOrFail($id);
         $filiere->nom = $request->nom;
         $filiere->type_formation = $request->type_formation;
+        $filiere->departement_id = $request->departement_id;
         $filiere->save();
         
         return redirect()->route('filieres.index')->with('success', 'Filière modifiée');

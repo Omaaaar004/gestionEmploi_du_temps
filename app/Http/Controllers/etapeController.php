@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Etape;
+use App\Models\Filiere;
 use Illuminate\Http\Request;
 
 class etapeController extends Controller
@@ -11,7 +13,8 @@ class etapeController extends Controller
      */
     public function index()
     {
-        //
+        $etapes = Etape::with ('filiere')->get();
+        return view('etapes.index', compact('etapes'));
     }
 
     /**
@@ -19,7 +22,8 @@ class etapeController extends Controller
      */
     public function create()
     {
-        //
+        $filieres = Filiere::all();
+        return view('etapes.create', compact('filieres'));
     }
 
     /**
@@ -27,7 +31,12 @@ class etapeController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        Etape::create([
+            'nom' => $request->nom,
+            'niveau' => $request->niveau,
+            'filiere_id' => $request->filiere_id
+        ]);
+        return redirect()->route('etapes.index')->with('success', 'Étape ajoutée !');
     }
 
     /**
@@ -43,7 +52,10 @@ class etapeController extends Controller
      */
     public function edit(string $id)
     {
-        //
+        $etape = Etape::findOrFail($id);
+        $filieres = Filiere::all();
+
+        return view('etapes.index', compact('etape', 'filieres'));
     }
 
     /**
@@ -51,7 +63,12 @@ class etapeController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+        $etape = Etape::findOrFail($id);
+        $etape->nom = $request->nom;
+        $etape->niveau = $request->niveau;
+        $etape->filiere_id = $request->filiere_id;
+        $etape->save();
+        return redirect()->route('etapes.index')->with('success', 'Étape modifiée !');
     }
 
     /**
@@ -59,6 +76,7 @@ class etapeController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        Etape::findOrFail($id)->delete();
+        return redirect()->route('etapes.index')->with('success', 'Étape supprimée');
     }
 }
