@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Local;
+use App\Models\Locals;
 use App\Models\Zone;
 use Illuminate\Http\Request;
 
@@ -13,7 +13,7 @@ class localController extends Controller
      */
     public function index()
     {
-        $locals = Local::with('zone')->get();
+        $locals = Locals::with('zone')->get();
         return view('locals.index', compact('locals'));
     }
 
@@ -31,13 +31,14 @@ class localController extends Controller
      */
     public function store(Request $request)
     {
+        // dd($request->all());
         $request->validate([
         'nom' => 'required|string|max:255',
         'capacite' => 'nullable|integer',
         'zone_id' => 'required|exists:zones,id',
     ]);
-        Local::create([
-            'nom' => $request->nom_local,
+        Locals::create([
+            'nom_local' => $request->nom_local,
             'capacite' => $request->capacite,
             'zone_id' => $request->zone_id
         ]);
@@ -58,7 +59,7 @@ class localController extends Controller
      */
     public function edit(string $id)
     {
-        $local = Local::findOrFail($id);
+        $local = Locals::findOrFail($id);
         $zones = Zone::al();
         return view('locals.edit', compact('locals', 'zones'));
     }
@@ -73,7 +74,7 @@ class localController extends Controller
         'capacite' => 'nullable|integer',
         'zone_id' => 'required|exists:zones,id',
     ]);
-        $local = Local::findOrFail($id);
+        $local = Locals::findOrFail($id);
         $local->nom_local = $request->nom_local;
         $local->capacite = $request->capacite;
         $local->zone_id = $request->zone_id;
@@ -86,7 +87,7 @@ class localController extends Controller
      */
     public function destroy(string $id)
     {
-        Local::findOrFail($id)->delete();
+        Locals::findOrFail($id)->delete();
         return redirect()->route('locals.index')->with('success', 'Local supprimé !');
     }
 }

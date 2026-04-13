@@ -31,6 +31,11 @@ class etapeController extends Controller
      */
     public function store(Request $request)
     {
+        $request->validate([
+        'nom' => 'required|string|max:255',
+        'niveau' =>'required|string|max:150',
+        'filiere_id' => 'required|exists:filieres,id',
+    ]);
         Etape::create([
             'nom' => $request->nom,
             'niveau' => $request->niveau,
@@ -63,6 +68,11 @@ class etapeController extends Controller
      */
     public function update(Request $request, string $id)
     {
+        $request->validate([
+        'nom' => 'required|string|max:255',
+        'niveau' =>'required|string|max:150',
+        'filiere_id' => 'required|exists:filieres,id',
+    ]);
         $etape = Etape::findOrFail($id);
         $etape->nom = $request->nom;
         $etape->niveau = $request->niveau;
