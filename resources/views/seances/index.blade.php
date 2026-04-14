@@ -40,68 +40,68 @@
     <div class="card-header">
         <h2>Grille Emploi du Temps</h2>
     </div>
-
     @php
-        $jours = ['Lundi','Mardi','Mercredi','Jeudi','Vendredi','Samedi'];
-        $heures = ['08:00','09:00','10:00','11:00','12:00','13:00','14:00','15:00','16:00','17:00','18:00'];
-        $couleurs = ['#e3f2fd','#f3e5f5','#e8f5e9','#fff3e0','#fce4ec','#e0f7fa','#f9fbe7','#ede7f6'];
-        $moduleColors = [];
-        $colorIndex = 0;
-    @endphp
+    $jours = ['Lundi','Mardi','Mercredi','Jeudi','Vendredi','Samedi'];
+    $heures = ['08:00','09:00','10:00','11:00','12:00','13:00','14:00','15:00','16:00','17:00'];
+    $couleurs = ['#e3f2fd','#f3e5f5','#e8f5e9','#fff3e0','#fce4ec','#e0f7fa'];
+    $moduleColors = [];
+    $colorIndex = 0;
+@endphp
 
-    <table style="width:100%; border-collapse:collapse; min-width:800px;">
-        <thead>
-            <tr>
-                <th style="background:#1a237e; color:white; padding:12px; width:80px;">Heure</th>
-                @foreach($jours as $jour)
-                    <th style="background:#1a237e; color:white; padding:12px; text-align:center;">{{ $jour }}</th>
-                @endforeach
-            </tr>
-        </thead>
-        <tbody>
+<table style="width:100%; border-collapse:collapse; min-width:800px; font-size:11px;">
+    <thead>
+        <tr>
+            <th style="background:#1a237e; color:white; padding:8px; width:70px;">Jour</th>
             @foreach($heures as $i => $heure)
-                @if($i < count($heures) - 1)
-                <tr>
-                    <td style="padding:8px 12px; background:#f5f5f5; font-size:12px; font-weight:bold; color:#555; white-space:nowrap; border:1px solid #eee;">
-                        {{ $heure }}<br><span style="color:#999;">{{ $heures[$i+1] }}</span>
-                    </td>
-                    @foreach($jours as $jour)
-                        @php
-                            $seancesDuCreneau = $seances->filter(function($s) use ($jour, $heure, $heures, $i) {
-                                return $s->jour == $jour &&
-                                       $s->heure_deb <= $heure &&
-                                       $s->heure_fin > $heure;
-                            });
-                        @endphp
-                        <td style="padding:4px; border:1px solid #eee; vertical-align:top; min-height:60px; height:60px;">
-                            @foreach($seancesDuCreneau as $seance)
-                                @php
-                                    if(!isset($moduleColors[$seance->module_id])) {
-                                        $moduleColors[$seance->module_id] = $couleurs[$colorIndex % count($couleurs)];
-                                        $colorIndex++;
-                                    }
-                                    $color = $moduleColors[$seance->module_id];
-                                @endphp
-                                <div style="background:{{ $color }}; border-radius:6px; padding:6px 8px; margin-bottom:3px; border-left:3px solid #1a237e; font-size:12px;">
-                                    <div style="font-weight:bold; color:#1a237e;">{{ $seance->module->nom }}</div>
-                                    <div style="color:#555;">👨‍🏫 {{ $seance->prof->nom }}</div>
-                                    <div style="color:#777; font-size:11px;">{{ $seance->filiere->nom }}</div>
-                                    <div style="display:flex; gap:5px; margin-top:4px;">
-                                        <a href="{{ route('seances.edit', $seance->id) }}" style="font-size:11px; color:#1a237e;">✏️ Modifier</a>
-                                        <form action="{{ route('seances.destroy', $seance->id) }}" method="POST" style="display:inline" onsubmit="return confirm('Supprimer ?')">
-                                            @csrf
-                                            @method('DELETE')
-                                            <button style="background:none; border:none; cursor:pointer; font-size:11px; padding:0;">🗑️ Supprimer</button>
-                                        </form>
-                                    </div>
-                                </div>
-                            @endforeach
-                        </td>
-                    @endforeach
-                </tr>
-                @endif
+                @php $prochaine = isset($heures[$i+1]) ? $heures[$i+1] : '18:00'; @endphp
+                <th style="background:#1a237e; color:white; padding:6px; text-align:center; font-size:10px;">
+                    {{ $heure }}<br><span style="opacity:0.7;">{{ $prochaine }}</span>
+                </th>
             @endforeach
-        </tbody>
-    </table>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach($jours as $jour)
+        <tr>
+            <td style="padding:6px; background:#f5f5f5; font-weight:bold; color:#1a237e; border:1px solid #eee; text-align:center;">
+                {{ $jour }}
+            </td>
+            @foreach($heures as $heure)
+                @php
+                    $seancesDuCreneau = $seances->filter(function($s) use ($jour, $heure) {
+                        return $s->jour == $jour &&
+                               substr($s->heure_deb, 0, 5) == $heure;
+                    });
+                @endphp
+                <td style="padding:3px; border:1px solid #eee; vertical-align:top; height:50px; min-width:80px;">
+                    @foreach($seancesDuCreneau as $seance)
+                        @php
+                            if(!isset($moduleColors[$seance->module_id])) {
+                                $moduleColors[$seance->module_id] = $couleurs[$colorIndex % count($couleurs)];
+                                $colorIndex++;
+                            }
+                            $color = $moduleColors[$seance->module_id];
+                        @endphp
+                        <div style="background:{{ $color }}; border-radius:4px; padding:3px 5px; border-left:3px solid #1a237e; font-size:10px;">
+                            <div style="font-weight:bold; color:#1a237e;">{{ $seance->module->nom }}</div>
+                            <div style="color:#555;">👨‍🏫 {{ $seance->prof->nom }}</div>
+                            <div style="color:#777;">{{ substr($seance->heure_deb,0,5) }}-{{ substr($seance->heure_fin,0,5) }}</div>
+                            <div style="display:flex; gap:3px; margin-top:2px;">
+                                <a href="{{ route('seances.edit', $seance->id) }}" style="color:#1a237e; font-size:10px; text-decoration:none;">✏️</a>
+                                <form action="{{ route('seances.destroy', $seance->id) }}" method="POST" style="display:inline" onsubmit="return confirm('Supprimer ?')">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button style="background:none; border:none; cursor:pointer; font-size:10px; color:#e53935; padding:0;">🗑️</button>
+                                </form>
+                            </div>
+                        </div>
+                    @endforeach
+                </td>
+            @endforeach
+        </tr>
+        @endforeach
+    </tbody>
+</table>
+   
 </div>
 @endsection
