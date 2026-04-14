@@ -9,6 +9,7 @@ use App\Http\Controllers\FiliereController;
 use App\Http\Controllers\EtapeController;
 use App\Http\Controllers\ProfController;
 use App\Http\Controllers\SeanceController;
+use App\Http\Controllers\ModuleController;
 
 Route::get('/',function(){
     return view('layouts.app');
@@ -21,6 +22,6 @@ Route::resource('locals',localController::class);
 Route::resource('departements',departementController::class);
 Route::resource('filieres',filiereController::class);
 Route::resource('etapes',etapeController::class);
-Route::resource('modules',moduleController::class);
 Route::resource('profs',profController::class);
 Route::resource('seances',seanceController::class);
+Route::resource('modules',ModuleController::class);

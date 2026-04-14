@@ -33,7 +33,7 @@ class localController extends Controller
     {
         // dd($request->all());
         $request->validate([
-        'nom' => 'required|string|max:255',
+        'nom_local' => 'required|string|max:255',
         'capacite' => 'nullable|integer',
         'zone_id' => 'required|exists:zones,id',
     ]);
@@ -43,7 +43,7 @@ class localController extends Controller
             'zone_id' => $request->zone_id
         ]);
 
-        return redirect()->route(locals.index)->with('success', 'Local ajouté');
+        return redirect()->route('locals.index')->with('success', 'Local ajouté');
     }
 
     /**
@@ -60,8 +60,8 @@ class localController extends Controller
     public function edit(string $id)
     {
         $local = Locals::findOrFail($id);
-        $zones = Zone::al();
-        return view('locals.edit', compact('locals', 'zones'));
+        $zones = Zone::all();
+        return view('locals.edit', compact('local', 'zones'));
     }
 
     /**
@@ -70,7 +70,7 @@ class localController extends Controller
     public function update(Request $request, string $id)
     {
         $request->validate([
-        'nom' => 'required|string|max:255',
+        'nom_local' => 'required|string|max:255',
         'capacite' => 'nullable|integer',
         'zone_id' => 'required|exists:zones,id',
     ]);
@@ -79,7 +79,7 @@ class localController extends Controller
         $local->capacite = $request->capacite;
         $local->zone_id = $request->zone_id;
         $local->save();
-        return redirect()->route(locals.index)->with('success', 'Local modifié !') ;
+        return redirect()->route('locals.index')->with('success', 'Local modifié !') ;
     }
 
     /**

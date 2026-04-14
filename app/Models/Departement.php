@@ -9,7 +9,7 @@ class Departement extends Model
     protected $fillable = ['nom','composante_id'];
 
     public function composante(){
-        return $this -> belongsTo(Departement::class);
+        return $this -> belongsTo(Composante::class);
     }
     
     public function filieres(){

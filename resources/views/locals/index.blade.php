@@ -11,6 +11,7 @@
     <table>
         <thead>
             <tr>
+                <th>#</th>
                 <th>Nom du local</th>
                 <th>Capacité</th>
                 <th>Zone</th>

@@ -13,7 +13,7 @@ class etapeController extends Controller
      */
     public function index()
     {
-        $etapes = Etape::with ('filiere')->get();
+        $etapes = Etape::with('filiere')->get();
         return view('etapes.index', compact('etapes'));
     }
 
@@ -60,7 +60,7 @@ class etapeController extends Controller
         $etape = Etape::findOrFail($id);
         $filieres = Filiere::all();
 
-        return view('etapes.index', compact('etape', 'filieres'));
+        return view('etapes.edit', compact('etape', 'filieres'));
     }
 
     /**

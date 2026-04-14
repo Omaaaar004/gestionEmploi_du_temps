@@ -14,7 +14,7 @@ class departementController extends Controller
     public function index()
     {
         $departements = Departement::with('composante')->get();
-        return view('departement.index', compact('departements'));
+        return view('departements.index', compact('departements'));
     }
 
     /**
@@ -72,7 +72,8 @@ class departementController extends Controller
         $departement = Departement::findOrFail($id);
         $departement->nom = $request->nom;
         $departement->composante_id = $request->composante_id;
-        return redirect()->route('composantes.index')->with('success','Departement modifié !');
+        $departement->save();
+        return redirect()->route('departements.index')->with('success','Departement modifié !');
     }
 
     /**

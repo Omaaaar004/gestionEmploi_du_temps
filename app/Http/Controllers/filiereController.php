@@ -13,7 +13,7 @@ class filiereController extends Controller
      */
     public function index()
     {
-        $filieres = Filieres::with('departement')->get();
+        $filieres = Filiere::with('departement')->get();
         return view('filieres.index',compact('filieres'));
     }
 

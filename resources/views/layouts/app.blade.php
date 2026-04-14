@@ -233,7 +233,7 @@
     <div class="sidebar">
         <div class="logo">
             <h2>UMPO</h2>
-            <p>Faculté Mohammed Premier Oujda</p>
+            <p>Université Mohammed Premier Oujda</p>
         </div>
         <div class="menu-title">
             Principal

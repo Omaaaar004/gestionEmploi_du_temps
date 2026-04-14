@@ -13,7 +13,7 @@ class profController extends Controller
      */
     public function index()
     {
-        $profs = prof::with('departement')->get();
+        $profs = Prof::with('departement')->get();
         return view('profs.index', compact('profs'));
     }
 
@@ -78,7 +78,7 @@ class profController extends Controller
         'email' => 'nullable|email|unique:profs,email',
         'departement_id' => 'required|exists:departements,id',
     ]);
-        $prof = Prof::finOrFail($id);
+        $prof = Prof::findOrFail($id);
         $prof->nom = $request->nom;
         $prof->prenom = $request->prenom;
         $prof->specialite = $request->specialite;

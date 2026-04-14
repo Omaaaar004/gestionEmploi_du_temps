@@ -8,8 +8,8 @@ class Etape extends Model
 {
     protected $fillable = ['nom','niveau','filiere_id'];
 
-    public function etape(){
-        return $this -> belongsTo(Etape::class);
+    public function filiere(){
+        return $this -> belongsTo(Filiere::class);
     } 
 
     public function modules(){

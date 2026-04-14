@@ -23,7 +23,7 @@
             <label>Description</label>
             <input type="text" name="description" value="{{ $zone->description }}" required>
         </div>
-        <button type="submit" class="btn btn-primary">💾 Enregistrer</button>
+        <button type="submit" class="btn btn-primary">💾 Enregistrer les modifications</button>
     </form>
 </div>
 @endsection

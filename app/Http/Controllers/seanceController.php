@@ -13,10 +13,18 @@ class seanceController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
+        $filieres = Filiere::all();
         $seances = Seance::with(['module','prof','filiere'])->get();
-        return view('seances.index', compact('seances'));
+        if($request->filiere_id){
+            $seances->where('filiere_id', $request->filiere_id);
+        }
+        if($request->semestre){
+            $seances->where('semestre', $request->semestre);
+        }
+
+        return view('seances.index', compact('seances','filieres'));
     }
 
     /**

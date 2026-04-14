@@ -8,7 +8,7 @@ class Prof extends Model
 {
     protected $fillable = ['nom','prenom','specialite','email','departement_id'];
 
-    public function departemen(){
+    public function departement(){
         return $this -> belongsTo(Departement::class);
     }
 
