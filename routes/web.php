@@ -1,4 +1,5 @@
 <?php
+use Illuminate\Support\Facades\Route;
 
 use Illuminate\Support\Facades\Routes;
 use App\Http\Controllers\ComposanteController;
@@ -16,6 +17,7 @@ Route::get('/',function(){
 
 });
 
+Route::get('/seances/events', [SeanceController::class, 'events'])->name('seances.events');
 Route::resource('composantes',composanteController::class);
 Route::resource('zones',zoneController::class);
 Route::resource('locals',localController::class);

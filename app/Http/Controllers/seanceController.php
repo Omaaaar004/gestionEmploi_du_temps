@@ -16,15 +16,39 @@ class seanceController extends Controller
     public function index(Request $request)
     {
         $filieres = Filiere::all();
-        $seances = Seance::with(['module','prof','filiere'])->get();
-        if($request->filiere_id){
-            $seances->where('filiere_id', $request->filiere_id);
-        }
-        if($request->semestre){
-            $seances->where('semestre', $request->semestre);
+        return view('seances.index', compact('filieres'));
+    }
+
+    public function events(Request $request)
+    {
+        $query = Seance::with(['module', 'prof', 'filiere']);
+
+        if ($request->filiere_id) {
+            $query->where('filiere_id', $request->filiere_id);
         }
 
-        return view('seances.index', compact('seances','filieres'));
+        if ($request->semestre) {
+            $query->where('semestre', $request->semestre);
+        }
+
+        $seances = $query->get();
+
+        $events = $seances->map(function ($s) {
+
+            return [
+                'id' => $s->id,
+                'title' => $s->module->nom . ' - ' . $s->prof->nom,
+                'daysOfWeek' => [$this->mapJourToNumber($s->jour)],
+                'startTime' => $s->heure_deb,
+                'endTime' => $s->heure_fin,
+                'extendedProps' => [
+                    'module' => $s->module->nom,
+                    'prof' => $s->prof->nom,
+                    'filiere' => $s->filiere->nom,
+                ]
+            ];
+        });
+        return response()->json($events);
     }
 
     /**
@@ -35,24 +59,23 @@ class seanceController extends Controller
         $modules = Module::all();
         $profs = Prof::all();
         $filieres = Filiere::all();
-        return view('seances.create', compact('modules','profs','filieres'));
+        return view('seances.create', compact('modules', 'profs', 'filieres'));
     }
 
     /**
      * Store a newly created resource in storage.
      */
     public function store(Request $request)
-    {   
-       
+    {
         $request->validate([
-        'jour' => 'required|string',
-        'heure_deb' => 'required',
-        'heure_fin' => 'required|after:heure_deb',
-        'semestre' => 'nullable|string',
-        'module_id' => 'required|exists:modules,id',
-        'prof_id' => 'required|exists:profs,id',
-        'filiere_id' => 'required|exists:filieres,id',
-    ]);
+            'jour' => 'required|string',
+            'heure_deb' => 'required',
+            'heure_fin' => 'required|after:heure_deb',
+            'semestre' => 'nullable|string',
+            'module_id' => 'required|exists:modules,id',
+            'prof_id' => 'required|exists:profs,id',
+            'filiere_id' => 'required|exists:filieres,id',
+        ]);
         Seance::create([
             'jour' => $request->jour,
             'heure_deb' => $request->heure_deb,
@@ -83,7 +106,7 @@ class seanceController extends Controller
         $profs = Prof::all();
         $filieres = Filiere::all();
 
-        return view('seances.edit', compact('seance','modules','profs','filieres'));
+        return view('seances.edit', compact('seance', 'modules', 'profs', 'filieres'));
     }
 
     /**
@@ -92,14 +115,14 @@ class seanceController extends Controller
     public function update(Request $request, string $id)
     {
         $request->validate([
-        'jour' => 'required|string',
-        'heure_deb' => 'required',
-        'heure_fin' => 'required|after:heure_deb',
-        'semestre' => 'nullable|string',
-        'module_id' => 'required|exists:modules,id',
-        'prof_id' => 'required|exists:profs,id',
-        'filiere_id' => 'required|exists:filieres,id',
-    ]);
+            'jour' => 'required|string',
+            'heure_deb' => 'required',
+            'heure_fin' => 'required|after:heure_deb',
+            'semestre' => 'nullable|string',
+            'module_id' => 'required|exists:modules,id',
+            'prof_id' => 'required|exists:profs,id',
+            'filiere_id' => 'required|exists:filieres,id',
+        ]);
         $seance = Seance::findOrFail($id);
         $seance->jour = $request->jour;
         $seance->heure_deb = $request->heure_deb;
@@ -119,7 +142,20 @@ class seanceController extends Controller
     public function destroy(string $id)
     {
         $seance = Seance::findOrFail($id)->delete();
-        
+
         return redirect()->route('seances.index')->with('success', 'Séance supprimée !');
+    }
+
+    private function mapJourToNumber($jour)
+    {
+        return [
+            'Dimanche' => 0,
+            'Lundi' => 1,
+            'Mardi' => 2,
+            'Mercredi' => 3,
+            'Jeudi' => 4,
+            'Vendredi' => 5,
+            'Samedi' => 6,
+        ][$jour];
     }
 }

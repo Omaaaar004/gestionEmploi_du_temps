@@ -227,6 +227,8 @@
             border-left: 4px solid #e53935;
         }
     </style>
+    @yield('style')
+
 </head>
 <body>
     <!-- sideBar-->
@@ -270,6 +272,6 @@
             @yield('content')
         </div>
     </div>
-
+@yield('script')
 </body>
 </html>
