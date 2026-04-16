@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Seance extends Model
 {
-    protected $fillable = ['jour','heure_deb','heure_fin','semestre','module_id','prof_id','filiere_id'];
+    protected $fillable = ['jour','heure_deb','heure_fin','semestre','module_id','prof_id','filiere_id','semestre_id'];
 
     public function module(){
         return $this -> belongsTo(Module::class);
@@ -18,6 +18,9 @@ class Seance extends Model
 
     public function filiere(){
         return $this -> belongsTo(Filiere::class);
+    }
+    public function semestre(){
+        return $this->belongsTo(Semestre::class);
     }
 
 }

@@ -71,7 +71,7 @@ class etapeController extends Controller
         $request->validate([
         'nom' => 'required|string|max:255',
         'niveau' =>'required|string|max:150',
-        'filiere_id' => 'required|exists:filieres,id',
+        'filiere_id' => 'required|exists:filieres,id'
     ]);
         $etape = Etape::findOrFail($id);
         $etape->nom = $request->nom;

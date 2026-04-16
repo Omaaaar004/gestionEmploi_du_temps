@@ -29,21 +29,19 @@
             <input type="time" name="heure_fin" value="{{ $seance->heure_fin }}" required>
         </div>
         <div class="form-group">
-            <label>Semestre</label>
-            <select name="semestre">
-                <option value="">-- Choisir --</option>
-                @foreach(['S1','S2','S3','S4','S5','S6'] as $s)
-                    <option value="{{ $s }}" {{ $seance->semestre == $s ? 'selected' : '' }}>{{ $s }}</option>
+            <label>Filière</label>
+            <select id="filiere-select" name="filiere_id" required>
+                <option value="">-- Choisir une filière --</option>
+                @foreach($filieres as $filiere)
+                    <option value="{{ $filiere->id }}" {{ $seance->filiere_id == $filiere->id ? 'selected' : '' }}>{{ $filiere->nom }}</option>
                 @endforeach
             </select>
         </div>
+
         <div class="form-group">
             <label>Module</label>
-            <select name="module_id" required>
-                <option value="">-- Choisir un module --</option>
-                @foreach($modules as $module)
-                    <option value="{{ $module->id }}" {{ $seance->module_id == $module->id ? 'selected' : '' }}>{{ $module->nom }}</option>
-                @endforeach
+            <select id="module-select" name="module_id" required>
+                <option value="">-- Choisir module --</option>
             </select>
         </div>
         <div class="form-group">
@@ -55,16 +53,70 @@
                 @endforeach
             </select>
         </div>
-        <div class="form-group">
-            <label>Filière</label>
-            <select name="filiere_id" required>
-                <option value="">-- Choisir une filière --</option>
-                @foreach($filieres as $filiere)
-                    <option value="{{ $filiere->id }}" {{ $seance->filiere_id == $filiere->id ? 'selected' : '' }}>{{ $filiere->nom }}</option>
-                @endforeach
-            </select>
-        </div>
+        
         <button type="submit" class="btn btn-primary">💾 Enregistrer les modifications</button>
     </form>
+
+    <script>
+        const filiereSelect = document.getElementById('filiere-select');
+        const etapeSelect = document.getElementById('etape-select');
+        const moduleSelect = document.getElementById('module-select');
+        const currentModuleId = '{{ $seance->module_id }}';
+        
+        // Same logic as create
+        filiereSelect.addEventListener('change', function() {
+            const filiereId = this.value;
+            etapeSelect.innerHTML = '<option value="">-- Chargement --</option>';
+            etapeSelect.disabled = true;
+            moduleSelect.innerHTML = '<option value="">-- Sélectionnez filière + étape --</option>';
+            moduleSelect.disabled = true;
+            
+            if (!filiereId) {
+                etapeSelect.innerHTML = '<option value="">-- Choisir après filière --</option>';
+                return;
+            }
+            
+            fetch(`/seances/etapes/${filiereId}`)
+                .then(response => response.json())
+                .then(etapes => {
+                    etapeSelect.innerHTML = '<option value="">-- Choisir étape --</option>';
+                    etapes.forEach(etape => {
+                        const option = document.createElement('option');
+                        option.value = etape.id;
+                        option.textContent = etape.nom + ' (' + etape.niveau + ')';
+                        etapeSelect.appendChild(option);
+                    });
+                    etapeSelect.disabled = false;
+                    // Try to select current etape if known
+                });
+        });
+        
+        etapeSelect.addEventListener('change', function() {
+            const filiereId = filiereSelect.value;
+            const etapeId = this.value;
+            if (!filiereId || !etapeId) {
+                moduleSelect.innerHTML = '<option value="">-- Sélectionnez filière + étape --</option>';
+                moduleSelect.disabled = true;
+                return;
+            }
+            
+            fetch(`/seances/modules/${filiereId}/${etapeId}`)
+                .then(response => response.json())
+                .then(modules => {
+                    moduleSelect.innerHTML = '<option value="{{ $seance->module_id }}" selected>' + currentModuleId + '</option>'; // preserve
+                    modules.forEach(module => {
+                        const option = document.createElement('option');
+                        option.value = module.id;
+                        option.textContent = module.nom;
+                        if (module.id == currentModuleId) option.selected = true;
+                        moduleSelect.appendChild(option);
+                    });
+                    moduleSelect.disabled = false;
+                });
+        });
+        
+        // Trigger load
+        filiereSelect.dispatchEvent(new Event('change'));
+    </script>
 </div>
 @endsection

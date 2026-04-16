@@ -16,13 +16,14 @@ return new class extends Migration
             $table->string('jour');
             $table->time('heure_deb');
             $table->time('heure_fin');
-            $table->string('semestre');
-            $table->unsignedBigInteger('module_id');
-            $table->foreign('module_id')->references('id')->on('modules');
             $table->unsignedBigInteger('prof_id');
             $table->foreign('prof_id')->references('id')->on('profs');
             $table->unsignedBigInteger('filiere_id');
             $table->foreign('filiere_id')->references('id')->on('filieres');
+            $table->unsignedBigInteger('semestre_id');
+            $table->unsignedBigInteger('semestre_id')->references('id')->on('semestres');
+            $table->unsignedBigInteger('module_id');
+            $table->foreign('module_id')->references('id')->on('modules');
             $table->timestamps();
         });
     }

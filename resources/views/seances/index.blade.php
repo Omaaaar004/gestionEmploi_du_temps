@@ -40,7 +40,61 @@
         </form>
     </div>
 
+    @if($view === 'list')
+    <div class="card">
+        <div class="card-header">
+            <h5>Séances ({{ $seances->count() }})</h5>
+            <a href="{{ route('seances.index', request()->only(['filiere_id', 'semestre']) + ['view' => 'calendar']) }}" class="btn btn-secondary">📅 Calendrier</a>
+        </div>
+        <div class="card-body">
+            @if($seances->count() > 0)
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Jour</th>
+                        <th>Heure</th>
+                        <th>Module</th>
+                        <th>Prof</th>
+                        <th>Semestre</th>
+                        <th>Filière</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach($seances as $seance)
+                    <tr>
+                        <td>{{ $seance->jour }}</td>
+                        <td>{{ $seance->heure_deb }} - {{ $seance->heure_fin }}</td>
+                        <td>{{ $seance->module->nom }}</td>
+                        <td>{{ $seance->prof->nom }}</td>
+                        <td>{{ $seance->semestre }}</td>
+                        <td>{{ $seance->filiere->nom }}</td>
+                        <td>
+                            <a href="{{ route('seances.edit', $seance->id) }}" class="btn btn-primary btn-sm">✏️ Modifier</a>
+                            <form action="{{ route('seances.destroy', $seance->id) }}" method="POST" style="display: inline" onsubmit="return confirm('Supprimer cette séance ?')">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" class="btn btn-danger btn-sm">🗑️ Supprimer</button>
+                            </form>
+                        </td>
+                    </tr>
+                    @endforeach
+                </tbody>
+            </table>
+            @else
+            <p class="text-muted">Aucune séance trouvée.</p>
+            @endif
+        </div>
+    </div>
+    @else
+    <div class="card mb-3">
+        <div class="card-header">
+            <h5>Calendrier des Séances</h5>
+            <a href="{{ route('seances.index', request()->only(['filiere_id', 'semestre']) + ['view' => 'list']) }}" class="btn btn-secondary">📋 Liste</a>
+        </div>
+    </div>
     <div id='calendar'></div>
+    @endif
 
 @endsection
 

@@ -18,6 +18,8 @@ Route::get('/',function(){
 });
 
 Route::get('/seances/events', [SeanceController::class, 'events'])->name('seances.events');
+Route::get('/seances/modules/{filiere}', [SeanceController::class, 'getModulesByFiliere'])->name('seances.modules.by.filiere');
+
 Route::resource('composantes',composanteController::class);
 Route::resource('zones',zoneController::class);
 Route::resource('locals',localController::class);

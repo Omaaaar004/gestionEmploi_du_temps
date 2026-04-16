@@ -130,9 +130,24 @@
             align-items: center;
             margin-bottom: 20px;
         }
+        .card-header h5{
+            font-size: 18px;
+            color: #1a237e;
+            margin: 0;
+        }
         .card-header h2{
             font-size: 18px;
             color: #1a237e;
+        }
+        .card-body {
+            padding: 0;
+        }
+        .text-muted {
+            color: #999;
+        }
+        .btn-sm {
+            padding: 5px 10px;
+            font-size: 12px;
         }
         /* buttons */
         .btn{

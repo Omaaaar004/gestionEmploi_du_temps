@@ -43,12 +43,19 @@
             </select>
         </div>
         <div class="form-group">
-            <label>Module</label>
-            <select name="module_id" required>
-                <option value="">-- Choisir un module --</option>
-                @foreach($modules as $module)
-                    <option value="{{ $module->id }}">{{ $module->nom }}</option>
+            <label>Filière</label>
+            <select id="filiere-select" name="filiere_id" required>
+                <option value="">-- Choisir une filière --</option>
+                @foreach($filieres as $filiere)
+                    <option value="{{ $filiere->id }}">{{ $filiere->nom }}</option>
                 @endforeach
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label>Module</label>
+            <select id="module-select" name="module_id" required disabled>
+                <option value="">-- Sélectionnez filière + étape --</option>
             </select>
         </div>
         <div class="form-group">
@@ -60,16 +67,63 @@
                 @endforeach
             </select>
         </div>
-        <div class="form-group">
-            <label>Filière</label>
-            <select name="filiere_id" required>
-                <option value="">-- Choisir une filière --</option>
-                @foreach($filieres as $filiere)
-                    <option value="{{ $filiere->id }}">{{ $filiere->nom }}</option>
-                @endforeach
-            </select>
-        </div>
+        
         <button type="submit" class="btn btn-primary">💾 Enregistrer</button>
     </form>
+
+    <script>
+        const filiereSelect = document.getElementById('filiere-select');
+        const etapeSelect = document.getElementById('etape-select');
+        const moduleSelect = document.getElementById('module-select');
+        
+        filiereSelect.addEventListener('change', function() {
+            const filiereId = this.value;
+            etapeSelect.innerHTML = '<option value="">-- Chargement --</option>';
+            etapeSelect.disabled = true;
+            moduleSelect.innerHTML = '<option value="">-- Sélectionnez filière + étape --</option>';
+            moduleSelect.disabled = true;
+            
+            if (!filiereId) {
+                etapeSelect.innerHTML = '<option value="">-- Choisir après filière --</option>';
+                return;
+            }
+            
+            fetch(`/seances/etapes/${filiereId}`)
+                .then(response => response.json())
+                .then(etapes => {
+                    etapeSelect.innerHTML = '<option value="">-- Choisir étape --</option>';
+                    etapes.forEach(etape => {
+                        const option = document.createElement('option');
+                        option.value = etape.id;
+                        option.textContent = etape.nom + ' (' + etape.niveau + ')';
+                        etapeSelect.appendChild(option);
+                    });
+                    etapeSelect.disabled = false;
+                });
+        });
+        
+        etapeSelect.addEventListener('change', function() {
+            const filiereId = filiereSelect.value;
+            const etapeId = this.value;
+            if (!filiereId || !etapeId) {
+                moduleSelect.innerHTML = '<option value="">-- Sélectionnez filière + étape --</option>';
+                moduleSelect.disabled = true;
+                return;
+            }
+            
+            fetch(`/seances/modules/${filiereId}/${etapeId}`)
+                .then(response => response.json())
+                .then(modules => {
+                    moduleSelect.innerHTML = '<option value="">-- Choisir module --</option>';
+                    modules.forEach(module => {
+                        const option = document.createElement('option');
+                        option.value = module.id;
+                        option.textContent = module.nom;
+                        moduleSelect.appendChild(option);
+                    });
+                    moduleSelect.disabled = false;
+                });
+        });
+    </script>
 </div>
 @endsection

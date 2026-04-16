@@ -9,15 +9,19 @@ class Filiere extends Model
     protected $fillable = ['nom','type_formation','departement_id'];
 
     public function departement(){
-        return $this -> belongsTo(Departement::class);
+        return $this->belongsTo(Departement::class);
     }
 
     public function etapes(){
-        return $this -> hasMany(Etape::class);
+        return $this->hasMany(Etape::class);
     }
 
     public function seances(){
-        return $this -> hasMany(Seance::class);
+        return $this->hasMany(Seance::class);
+    }
+
+    public function modules(){
+        return $this->hasMany(Filiere::class);
     }
 
 }
