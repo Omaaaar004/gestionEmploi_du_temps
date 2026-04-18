@@ -14,8 +14,6 @@ return new class extends Migration
         Schema::create('modules', function (Blueprint $table) {
             $table->id();
             $table->string('nom');
-            $table->unsignedBigInteger('etape_id');
-            $table->foreign('etape_id')->references('id')->on('etapes');
             $table->unsignedBiginteger('filiere_id');
             $table->foreign('filiere_id')->references('id')->on('filieres');
             $table->unsignedBigInteger('semestre_id');

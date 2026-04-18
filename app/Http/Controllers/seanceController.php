@@ -17,6 +17,7 @@ class seanceController extends Controller
 public function index(Request $request)
     {
         $query = Seance::with(['module', 'prof', 'filiere','semestre']);
+        $filieres = Filiere::all();
 
         if ($request->filiere_id) {
             $query->where('filiere_id', $request->filiere_id);
@@ -30,7 +31,7 @@ public function index(Request $request)
 
         $view = $request->get('view', 'calendar'); // default to calendar
 
-        return view('seances.index', compact('filieres', 'seances', 'view'));
+        return view('seances.index', compact('seances', 'view','filieres'));
     }
 
     public function events(Request $request)

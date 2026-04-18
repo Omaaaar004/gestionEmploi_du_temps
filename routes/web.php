@@ -11,6 +11,7 @@ use App\Http\Controllers\EtapeController;
 use App\Http\Controllers\ProfController;
 use App\Http\Controllers\SeanceController;
 use App\Http\Controllers\ModuleController;
+use App\Http\Controllers\SemestreController;
 
 Route::get('/',function(){
     return view('layouts.app');
@@ -29,3 +30,4 @@ Route::resource('etapes',etapeController::class);
 Route::resource('profs',profController::class);
 Route::resource('seances',seanceController::class);
 Route::resource('modules',ModuleController::class);
+Route::resource('semestres',SemestreController::class);

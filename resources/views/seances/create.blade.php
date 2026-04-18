@@ -31,18 +31,6 @@
             <input type="time" name="heure_fin" required>
         </div>
         <div class="form-group">
-            <label>Semestre</label>
-            <select name="semestre">
-                <option value="">-- Choisir --</option>
-                <option value="S1">S1</option>
-                <option value="S2">S2</option>
-                <option value="S3">S3</option>
-                <option value="S4">S4</option>
-                <option value="S5">S5</option>
-                <option value="S6">S6</option>
-            </select>
-        </div>
-        <div class="form-group">
             <label>Filière</label>
             <select id="filiere-select" name="filiere_id" required>
                 <option value="">-- Choisir une filière --</option>
@@ -51,11 +39,19 @@
                 @endforeach
             </select>
         </div>
-
+        <div class="form-group">
+            <label>Semestre</label>
+            <select name="semestre_id" id="semestre-select">
+                <option value="">-- Choisir un semestre --</option>
+                @foreach($semestres as $semestre)
+                <option value="{{ $semestre->id }}">{{ $semestre->nom }}</option>
+                @endforeach
+            </select>
+        </div>
         <div class="form-group">
             <label>Module</label>
             <select id="module-select" name="module_id" required disabled>
-                <option value="">-- Sélectionnez filière + étape --</option>
+                <option value="">-- Sélectionnez filière + semestre --</option>
             </select>
         </div>
         <div class="form-group">
@@ -73,45 +69,45 @@
 
     <script>
         const filiereSelect = document.getElementById('filiere-select');
-        const etapeSelect = document.getElementById('etape-select');
+        const semestreSelect = document.getElementById('semestre-select');
         const moduleSelect = document.getElementById('module-select');
         
         filiereSelect.addEventListener('change', function() {
             const filiereId = this.value;
-            etapeSelect.innerHTML = '<option value="">-- Chargement --</option>';
-            etapeSelect.disabled = true;
-            moduleSelect.innerHTML = '<option value="">-- Sélectionnez filière + étape --</option>';
+            semestreSelect.innerHTML = '<option value="">-- Chargement --</option>';
+            semestreSelect.disabled = true;
+            moduleSelect.innerHTML = '<option value="">-- Sélectionnez filière + semestre --</option>';
             moduleSelect.disabled = true;
             
             if (!filiereId) {
-                etapeSelect.innerHTML = '<option value="">-- Choisir après filière --</option>';
+                semestreSelect.innerHTML = '<option value="">-- Choisir après filière --</option>';
                 return;
             }
             
             fetch(`/seances/etapes/${filiereId}`)
                 .then(response => response.json())
-                .then(etapes => {
-                    etapeSelect.innerHTML = '<option value="">-- Choisir étape --</option>';
-                    etapes.forEach(etape => {
+                .then(semestres => {
+                    semestreSelect.innerHTML = '<option value="">-- Choisir semestre --</option>';
+                    semestres.forEach(semestres => {
                         const option = document.createElement('option');
-                        option.value = etape.id;
-                        option.textContent = etape.nom + ' (' + etape.niveau + ')';
-                        etapeSelect.appendChild(option);
+                        option.value = semestre.id;
+                        option.textContent = semestre.nom;
+                        semestreSelect.appendChild(option);
                     });
-                    etapeSelect.disabled = false;
+                    semestreSelect.disabled = false;
                 });
         });
         
         etapeSelect.addEventListener('change', function() {
             const filiereId = filiereSelect.value;
-            const etapeId = this.value;
-            if (!filiereId || !etapeId) {
-                moduleSelect.innerHTML = '<option value="">-- Sélectionnez filière + étape --</option>';
+            const semestreId = this.value;
+            if (!filiereId || !semestreId) {
+                moduleSelect.innerHTML = '<option value="">-- Sélectionnez filière + semestre --</option>';
                 moduleSelect.disabled = true;
                 return;
             }
             
-            fetch(`/seances/modules/${filiereId}/${etapeId}`)
+            fetch(`/seances/modules/${filiereId}/${semestreId}`)
                 .then(response => response.json())
                 .then(modules => {
                     moduleSelect.innerHTML = '<option value="">-- Choisir module --</option>';

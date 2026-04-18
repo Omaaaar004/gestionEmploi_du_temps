@@ -15,13 +15,23 @@
             <label>Nom</label>
             <input type="text" name="nom" value="{{ $module->nom }}" required>
         </div>
+        <div class="form-gorup">
+            <label>Filière</label>
+            <select name="filiere_id" required>
+                <option value="">-- Choisir une filière --</option>
+                @foreach($filieres as $filiere)
+                <option value="{{ $filiere->id }}">
+
+                </option>
+            </select>
+        </div>
         <div class="form-group">
-            <label>Étape</label>
-            <select name="etape_id" required>
-                <option value="">-- Choisir une étape --</option>
-                @foreach($etapes as $etape)
-                    <option value="{{ $etape->id }}" {{ $module->etape_id == $etape->id ? 'selected' : '-' }}>
-                        {{ $etape->nom }}
+            <label>Semestre</label>
+            <select name="semestre_id" required>
+                <option value="">-- Choisir un semestre --</option>
+                @foreach($semestres as $semestre)
+                    <option value="{{ $semestre->id }}">
+                        {{ $semestre->nom }}
                     </option>
                 @endforeach
             </select>

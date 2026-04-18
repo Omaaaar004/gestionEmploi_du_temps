@@ -11,9 +11,4 @@ class Etape extends Model
     public function filiere(){
         return $this -> belongsTo(Filiere::class);
     } 
-
-    public function modules(){
-        return $this -> hasMany(Module::class);
-    }
-
 }

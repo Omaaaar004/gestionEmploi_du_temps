@@ -17,9 +17,18 @@
         <div class="form-group">
             <label>Étape</label>
             <select name="etape_id" required>
-                <option value="">-- Choisir une étape --</option>
-                @foreach($etapes as $etape)
-                <option value="{{ $etape->id }}">{{ $etape->nom }}</option>
+                <option value="">-- Choisir une Filière --</option>
+                @foreach($filieres as $filiere)
+                <option value="{{ $filiere->id }}">{{ $filiere->nom }}</option>
+                @endforeach
+            </select>
+        </div>
+        <div class="form-group">
+            <label>Semestre</label>
+            <select name="semestre_id">
+                <option value="">-- Choisir un semestre --</option>
+                @foreach($semestres as $semestre)
+                <option value="{{ $semestre->id }}">{{ $semestre->nom }}</option>
                 @endforeach
             </select>
         </div>

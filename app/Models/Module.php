@@ -12,9 +12,7 @@ class Module extends Model
         return $this->belongsTo(Filiere::class);
     }
     
-    public function etape(){
-        return $this -> belongsTo(Etape::class);
-    }
+
 
    public function semestre(){
         return $this-> belongsTo(Semestre::class);

@@ -14,7 +14,7 @@ class SemestreController extends Controller
     // Liste tous les semestres
     public function index()
     {
-        $semestres = Semestre::with('etape')->get();
+        $semestres = Semestre::all();
         return view('semestres.index', compact('semestres'));
     }
 
@@ -28,44 +28,41 @@ class SemestreController extends Controller
     // Enregistrer un nouveau semestre
     public function store(Request $request)
     {
+        
         $request->validate([
-            'nom'      => 'required|string|max:255',
-            'etape_id' => 'required|exists:etapes,id',
+            'nom'=>'required|string|max:255',
+
+        ]);
+        Semestre::create([
+            'nom' => $request->nom
         ]);
 
-        Semestre::create($request->only('nom', 'etape_id'));
-
-        return redirect()->route('semestres.index')
-                         ->with('success', 'Semestre créé avec succès !');
+        return redirect()->route('semestres.index')->with('success', 'Semestre créé avec succès !');
     }
 
     // Formulaire de modification
-    public function edit(Semestre $semestre)
+    public function edit($id)
     {
-        $etapes = Etape::all();
-        return view('semestres.edit', compact('semestre', 'etapes'));
+        $semestre = Semestre::findOrFail($id);
+        return view('semestres.edit', compact('semestre'));
     }
 
     // Mettre à jour un semestre
-    public function update(Request $request, Semestre $semestre)
+    public function update(Request $request, $id)
     {
         $request->validate([
             'nom'      => 'required|string|max:255',
-            'etape_id' => 'required|exists:etapes,id',
         ]);
 
-        $semestre->update($request->only('nom', 'etape_id'));
-
-        return redirect()->route('semestres.index')
-                         ->with('success', 'Semestre mis à jour avec succès !');
+        $semestre->update($request->only('nom'));
+        $semestre->save();
+        return redirect()->route('semestres.index')->with('success', 'Semestre mis à jour avec succès !');
     }
 
     // Supprimer un semestre
-    public function destroy(Semestre $semestre)
+    public function destroy($id)
     {
-        $semestre->delete();
-
-        return redirect()->route('semestres.index')
-                         ->with('success', 'Semestre supprimé avec succès !');
+        Semestre::findOrfail($id)->delete();
+        return redirect()->route('semestres.index')->with('success', 'Semestre supprimer !');
     }
 }

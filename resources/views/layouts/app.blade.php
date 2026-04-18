@@ -260,7 +260,7 @@
         <a href="{{ route('composantes.index') }}">🏫 Composantes</a>
         <a href="{{ route('departements.index') }}">🏢 Départements</a>
         <a href="{{ route('filieres.index') }}">📚 Filières</a>
-        <a href="{{ route('etapes.index') }}">📋 Étapes</a>
+        <a href="{{ route('semestres.index') }}">🎓 Semestres</a>
         <a href="{{ route('modules.index') }}">📖 Modules</a>
         <a href="{{ route('profs.index') }}">👨‍🏫 Professeurs</a>
         <div class="menu-title">Locaux</div>

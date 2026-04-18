@@ -14,8 +14,6 @@ return new class extends Migration
         Schema::create('semestres', function (Blueprint $table) {
             $table->id();
             $table->string('nom');
-            $table->unsignedBigInteger('etape_id');
-            $table->foreign('etape_id')->references('id')->on('etapes');
             $table->timestamps();
         });
     }
