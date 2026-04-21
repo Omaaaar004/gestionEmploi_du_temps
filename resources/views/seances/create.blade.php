@@ -14,12 +14,9 @@
             <label>Jour</label>
             <select name="jour" required>
                 <option value="">-- Choisir un jour --</option>
-                <option value="Lundi">Lundi</option>
-                <option value="Mardi">Mardi</option>
-                <option value="Mercredi">Mercredi</option>
-                <option value="Jeudi">Jeudi</option>
-                <option value="Vendredi">Vendredi</option>
-                <option value="Samedi">Samedi</option>
+                @foreach(['Lundi','Mardi','Mercredi','Jeudi','Vendredi','Samedi'] as $j)
+                    <option value="{{ $j }}">{{ $j }}</option>
+                @endforeach
             </select>
         </div>
         <div class="form-group">
@@ -41,17 +38,14 @@
         </div>
         <div class="form-group">
             <label>Semestre</label>
-            <select name="semestre_id" id="semestre-select">
-                <option value="">-- Choisir un semestre --</option>
-                @foreach($semestres as $semestre)
-                <option value="{{ $semestre->id }}">{{ $semestre->nom }}</option>
-                @endforeach
+            <select name="semestre_id" id="semestre-select" disabled required>
+                <option value="">-- Choisir d'abord une filière --</option>
             </select>
         </div>
         <div class="form-group">
             <label>Module</label>
             <select id="module-select" name="module_id" required disabled>
-                <option value="">-- Sélectionnez filière + semestre --</option>
+                <option value="">-- Sélectionnez d'abord un semestre --</option>
             </select>
         </div>
         <div class="form-group">
@@ -63,8 +57,17 @@
                 @endforeach
             </select>
         </div>
+        <div class="form-group">
+            <label>Local (Optionnel)</label>
+            <select name="local_id">
+                <option value="">-- Choisir un local --</option>
+                @foreach($locals as $local)
+                    <option value="{{ $local->id }}">{{ $local->nom_local }}</option>
+                @endforeach
+            </select>
+        </div>
         
-        <button type="submit" class="btn btn-primary">💾 Enregistrer</button>
+        <button type="submit" class="btn btn-primary">💾 Enregistrer la séance</button>
     </form>
 
     <script>
@@ -72,52 +75,71 @@
         const semestreSelect = document.getElementById('semestre-select');
         const moduleSelect = document.getElementById('module-select');
         
+        const baseUrl = "{{ url('/') }}";
+
         filiereSelect.addEventListener('change', function() {
             const filiereId = this.value;
-            semestreSelect.innerHTML = '<option value="">-- Chargement --</option>';
+            
+            // Reset semestres and modules
+            semestreSelect.innerHTML = '<option value="">-- Chargement... --</option>';
             semestreSelect.disabled = true;
-            moduleSelect.innerHTML = '<option value="">-- Sélectionnez filière + semestre --</option>';
+            moduleSelect.innerHTML = '<option value="">-- Sélectionnez d\'abord un semestre --</option>';
             moduleSelect.disabled = true;
             
             if (!filiereId) {
-                semestreSelect.innerHTML = '<option value="">-- Choisir après filière --</option>';
+                semestreSelect.innerHTML = '<option value="">-- Choisir d\'abord une filière --</option>';
                 return;
             }
             
-            fetch(`/seances/etapes/${filiereId}`)
+            fetch(`${baseUrl}/seances/semestres/${filiereId}`)
                 .then(response => response.json())
                 .then(semestres => {
-                    semestreSelect.innerHTML = '<option value="">-- Choisir semestre --</option>';
-                    semestres.forEach(semestres => {
+                    semestreSelect.innerHTML = '<option value="">-- Choisir un semestre --</option>';
+                    semestres.forEach(s => {
                         const option = document.createElement('option');
-                        option.value = semestre.id;
-                        option.textContent = semestre.nom;
+                        option.value = s.id;
+                        option.textContent = s.nom;
                         semestreSelect.appendChild(option);
                     });
                     semestreSelect.disabled = false;
+                })
+                .catch(err => {
+                    console.error('Erreur chargement semestres:', err);
+                    semestreSelect.innerHTML = '<option value="">Erreur de chargement</option>';
                 });
         });
         
-        etapeSelect.addEventListener('change', function() {
+        semestreSelect.addEventListener('change', function() {
             const filiereId = filiereSelect.value;
             const semestreId = this.value;
+            
+            moduleSelect.innerHTML = '<option value="">-- Chargement... --</option>';
+            moduleSelect.disabled = true;
+
             if (!filiereId || !semestreId) {
-                moduleSelect.innerHTML = '<option value="">-- Sélectionnez filière + semestre --</option>';
-                moduleSelect.disabled = true;
+                moduleSelect.innerHTML = '<option value="">-- Sélectionnez d\'abord un semestre --</option>';
                 return;
             }
             
-            fetch(`/seances/modules/${filiereId}/${semestreId}`)
+            fetch(`${baseUrl}/seances/modules/${filiereId}/${semestreId}`)
                 .then(response => response.json())
                 .then(modules => {
-                    moduleSelect.innerHTML = '<option value="">-- Choisir module --</option>';
-                    modules.forEach(module => {
-                        const option = document.createElement('option');
-                        option.value = module.id;
-                        option.textContent = module.nom;
-                        moduleSelect.appendChild(option);
-                    });
-                    moduleSelect.disabled = false;
+                    moduleSelect.innerHTML = '<option value="">-- Choisir un module --</option>';
+                    if (modules.length === 0) {
+                        moduleSelect.innerHTML = '<option value="">Aucun module trouvé</option>';
+                    } else {
+                        modules.forEach(m => {
+                            const option = document.createElement('option');
+                            option.value = m.id;
+                            option.textContent = m.nom;
+                            moduleSelect.appendChild(option);
+                        });
+                        moduleSelect.disabled = false;
+                    }
+                })
+                .catch(err => {
+                    console.error('Erreur chargement modules:', err);
+                    moduleSelect.innerHTML = '<option value="">Erreur de chargement</option>';
                 });
         });
     </script>

@@ -15,14 +15,15 @@
             <label>Nom</label>
             <input type="text" name="nom" value="{{ $module->nom }}" required>
         </div>
-        <div class="form-gorup">
+        <div class="form-group">
             <label>Filière</label>
             <select name="filiere_id" required>
                 <option value="">-- Choisir une filière --</option>
                 @foreach($filieres as $filiere)
                 <option value="{{ $filiere->id }}">
-
+                    {{ $filiere->nom }}
                 </option>
+                @endforeach
             </select>
         </div>
         <div class="form-group">

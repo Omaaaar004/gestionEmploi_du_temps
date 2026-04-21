@@ -37,11 +37,16 @@
                 @endforeach
             </select>
         </div>
-
+        <div class="form-group">
+            <label>Semestre</label>
+            <select name="semestre_id" id="semestre-select" required disabled>
+                <option value="">-- Chargement... --</option>
+            </select>
+        </div>
         <div class="form-group">
             <label>Module</label>
-            <select id="module-select" name="module_id" required>
-                <option value="">-- Choisir module --</option>
+            <select id="module-select" name="module_id" required disabled>
+                <option value="">-- Sélectionnez d'abord un semestre --</option>
             </select>
         </div>
         <div class="form-group">
@@ -53,57 +58,77 @@
                 @endforeach
             </select>
         </div>
+        <div class="form-group">
+            <label>Local (Optionnel)</label>
+            <select name="local_id">
+                <option value="">-- Choisir un local --</option>
+                @foreach($locals as $local)
+                    <option value="{{ $local->id }}" {{ $seance->local_id == $local->id ? 'selected' : '' }}>{{ $local->nom_local }}</option>
+                @endforeach
+            </select>
+        </div>
         
         <button type="submit" class="btn btn-primary">💾 Enregistrer les modifications</button>
     </form>
 
     <script>
         const filiereSelect = document.getElementById('filiere-select');
-        const etapeSelect = document.getElementById('etape-select');
+        const semestreSelect = document.getElementById('semestre-select');
         const moduleSelect = document.getElementById('module-select');
+
+        const currentSemestreId = '{{ $seance->semestre_id }}';
         const currentModuleId = '{{ $seance->module_id }}';
+        const baseUrl = "{{ url('/') }}";
         
-        // Same logic as create
         filiereSelect.addEventListener('change', function() {
             const filiereId = this.value;
-            etapeSelect.innerHTML = '<option value="">-- Chargement --</option>';
-            etapeSelect.disabled = true;
-            moduleSelect.innerHTML = '<option value="">-- Sélectionnez filière + étape --</option>';
+            semestreSelect.innerHTML = '<option value="">-- Chargement... --</option>';
+            semestreSelect.disabled = true;
+            moduleSelect.innerHTML = '<option value="">-- Sélectionnez d\'abord un semestre --</option>';
             moduleSelect.disabled = true;
             
             if (!filiereId) {
-                etapeSelect.innerHTML = '<option value="">-- Choisir après filière --</option>';
+                semestreSelect.innerHTML = '<option value="">-- Choisir d\'abord une filière --</option>';
                 return;
             }
             
-            fetch(`/seances/etapes/${filiereId}`)
+            fetch(`${baseUrl}/seances/semestres/${filiereId}`)
                 .then(response => response.json())
-                .then(etapes => {
-                    etapeSelect.innerHTML = '<option value="">-- Choisir étape --</option>';
-                    etapes.forEach(etape => {
+                .then(semestres => {
+                    semestreSelect.innerHTML = '<option value="">-- Choisir un semestre --</option>';
+                    semestres.forEach(semestre => {
                         const option = document.createElement('option');
-                        option.value = etape.id;
-                        option.textContent = etape.nom + ' (' + etape.niveau + ')';
-                        etapeSelect.appendChild(option);
+                        option.value = semestre.id;
+                        option.textContent = semestre.nom;
+                        if(semestre.id == currentSemestreId) option.selected = true;
+                        semestreSelect.appendChild(option);
                     });
-                    etapeSelect.disabled = false;
-                    // Try to select current etape if known
-                });
+                    semestreSelect.disabled = false;
+                    
+                    // Trigger semestre change to load modules if we have a currentSemestreId
+                    if(semestreSelect.value) {
+                        semestreSelect.dispatchEvent(new Event('change'));
+                    }
+                })
+                .catch(err => console.error('Erreur semestres:', err));
         });
         
-        etapeSelect.addEventListener('change', function() {
+        semestreSelect.addEventListener('change', function() {
             const filiereId = filiereSelect.value;
-            const etapeId = this.value;
-            if (!filiereId || !etapeId) {
-                moduleSelect.innerHTML = '<option value="">-- Sélectionnez filière + étape --</option>';
-                moduleSelect.disabled = true;
+            const semestreId = this.value;
+            
+            moduleSelect.innerHTML = '<option value="">-- Chargement... --</option>'
+            moduleSelect.disabled = true;
+            
+            if (!filiereId || !semestreId) {
+                moduleSelect.innerHTML = '<option value="">-- Sélectionnez d\'abord un semestre --</option>';
                 return;
             }
             
-            fetch(`/seances/modules/${filiereId}/${etapeId}`)
+            fetch(`${baseUrl}/seances/modules/${filiereId}/${semestreId}`)
                 .then(response => response.json())
                 .then(modules => {
-                    moduleSelect.innerHTML = '<option value="{{ $seance->module_id }}" selected>' + currentModuleId + '</option>'; // preserve
+                    moduleSelect.innerHTML = '<option value="">-- Choisir un module --</option>';
                     modules.forEach(module => {
                         const option = document.createElement('option');
                         option.value = module.id;
@@ -112,11 +137,16 @@
                         moduleSelect.appendChild(option);
                     });
                     moduleSelect.disabled = false;
-                });
+                })
+                .catch(err => console.error('Erreur modules:', err));
         });
         
-        // Trigger load
-        filiereSelect.dispatchEvent(new Event('change'));
+        // Initial load
+        window.addEventListener('load', function(){
+            if(filiereSelect.value){
+                filiereSelect.dispatchEvent(new Event('change'));
+            }
+        });
     </script>
 </div>
 @endsection

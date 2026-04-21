@@ -12,6 +12,7 @@
         <thead>
             <th>#</th>
             <th>Nom</th>
+            <th>Filiere</th>
             <th>Actions</th>
         </thead>
         <tbody>
@@ -19,6 +20,7 @@
                 <tr>
                     <td>{{ $semestre->id }}</td>
                     <td>{{ $semestre->nom }}</td>
+                    <td>{{ $semestre->filiere->nom }}</td>
                     <td>
                         <a href="{{ route('semestres.edit', $semestre->id) }}" class="btn btn-primary">✏️ Modifier</a>
                         <form action="{{ route('semestres.destroy', $semestre->id) }}" method="POST" onsubmit="return confirm('supprimer ?')" style="display: inline">
@@ -30,7 +32,7 @@
                 </tr>
                 @empty
                 <tr>
-                    <td colspan="5" style="text-align: center;color:#999; paddong:20px;">Aucun semestre trouvé</td>
+                    <td colspan="4" style="text-align: center;color:#999; paddong:20px;">Aucun semestre trouvé</td>
                 </tr>
             @endforelse
         </tbody>

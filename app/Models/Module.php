@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Module extends Model
 {
-    protected $fillable = ['nom','etape_id'];
+    protected $fillable = ['nom','filiere_id','semestre_id'];
     
     public function filiere(){
         return $this->belongsTo(Filiere::class);

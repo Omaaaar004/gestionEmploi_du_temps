@@ -91,4 +91,5 @@ class filiereController extends Controller
         Filiere::findOrFail($id)->delete();
         return redirect()->route('filieres.index')->with('success', 'Filière supprimée');
     }
+    
 }

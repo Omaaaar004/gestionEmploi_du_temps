@@ -7,18 +7,16 @@ use App\Models\Module;
 use App\Models\Prof;
 use App\Models\Filiere;
 use App\Models\Semestre;
+use App\Models\Locals;
 use Illuminate\Http\Request;
 
-class seanceController extends Controller
+class SeanceController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-public function index(Request $request)
+    public function index(Request $request)
     {
-        $query = Seance::with(['module', 'prof', 'filiere','semestre']);
+        $query = Seance::with(['module', 'prof', 'filiere', 'semestre', 'local']);
         $filieres = Filiere::all();
-
+        $semestres = Semestre::all();
         if ($request->filiere_id) {
             $query->where('filiere_id', $request->filiere_id);
         }
@@ -28,15 +26,14 @@ public function index(Request $request)
         }
 
         $seances = $query->get();
+        $view = $request->get('view', 'grid'); // default: grille
 
-        $view = $request->get('view', 'calendar'); // default to calendar
-
-        return view('seances.index', compact('seances', 'view','filieres'));
+        return view('seances.index', compact('seances', 'view', 'filieres', 'semestres'));
     }
 
     public function events(Request $request)
     {
-        $query = Seance::with(['module', 'prof', 'filiere','semestre']);
+        $query = Seance::with(['module', 'prof', 'filiere', 'semestre', 'local']);
 
         if ($request->filiere_id) {
             $query->where('filiere_id', $request->filiere_id);
@@ -49,143 +46,135 @@ public function index(Request $request)
         $seances = $query->get();
 
         $events = $seances->map(function ($s) {
-
             return [
-                'id' => $s->id,
-                'title' => $s->module->nom . ' - ' . $s->prof->nom,
+                'id'         => $s->id,
+                'title'      => $s->module->nom . ' - ' . $s->prof->nom,
                 'daysOfWeek' => [$this->mapJourToNumber($s->jour)],
-                'startTime' => $s->heure_deb,
-                'endTime' => $s->heure_fin,
+                'startTime'  => $s->heure_deb,
+                'endTime'    => $s->heure_fin,
                 'extendedProps' => [
-                    'prof' => $s->prof->nom,
-                    'filiere' => $s->filiere->nom,
+                    'prof'     => $s->prof->nom . ' ' . $s->prof->prenom,
+                    'filiere'  => $s->filiere->nom,
                     'semestre' => $s->semestre->nom,
-                    'module' => $s->module->nom
+                    'module'   => $s->module->nom,
+                    'local'    => $s->local ? $s->local->nom_local : '-',
                 ]
             ];
         });
+
         return response()->json($events);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
     public function create()
     {
-        
-        $profs = Prof::all();
+        $profs    = Prof::all();
         $filieres = Filiere::all();
         $semestres = Semestre::all();
-        $modules = Module::all();
-        return view('seances.create', compact('profs', 'filieres','semestres','modules'));
+        $modules  = Module::all();
+        $locals   = Locals::all();
+        return view('seances.create', compact('profs', 'filieres', 'semestres', 'modules', 'locals'));
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
         $request->validate([
-            'jour' => 'required|string',
-            'heure_deb' => 'required',
-            'heure_fin' => 'required|after:heure_deb',
-            'prof_id' => 'required|exists:profs,id',
+            'jour'       => 'required|string',
+            'heure_deb'  => 'required',
+            'heure_fin'  => 'required|after:heure_deb',
+            'prof_id'    => 'required|exists:profs,id',
             'filiere_id' => 'required|exists:filieres,id',
-            'semestre_id'=> 'required|exists:filieres,id',
-            'module_id' => 'required|exists:modules,id'
+            'semestre_id'=> 'required|exists:semestres,id',
+            'module_id'  => 'required|exists:modules,id',
+            'local_id'   => 'nullable|exists:locals,id',
         ]);
+
         Seance::create([
-            'jour' => $request->jour,
-            'heure_deb' => $request->heure_deb,
-            'heure_fin' => $request->heure_fin,
-            'prof_id' => $request->prof_id,
+            'jour'       => $request->jour,
+            'heure_deb'  => $request->heure_deb,
+            'heure_fin'  => $request->heure_fin,
+            'prof_id'    => $request->prof_id,
             'filiere_id' => $request->filiere_id,
-            'semestre_id' => $request->semestre_id,
-            'module_id' => $request->module_id
+            'semestre_id'=> $request->semestre_id,
+            'module_id'  => $request->module_id,
+            'local_id'   => $request->local_id,
         ]);
+
         return redirect()->route('seances.index')->with('success', 'Séance Ajoutée !');
     }
 
-    /**
-     * Display the specified resource.
-     */
     public function show(string $id)
     {
         //
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
     public function edit(string $id)
     {
-        $seance = Seance::findOrFail($id);
-        $profs = Profs::all(); 
+        $seance   = Seance::findOrFail($id);
+        $profs    = Prof::all();
         $filieres = Filiere::all();
-        $semestre = Filiere::all();
-        $modules = Module::all();
+        $semestres = Semestre::all();
+        $modules  = Module::all();
+        $locals   = Locals::all();
+        return view('seances.edit', compact('seance', 'profs', 'filieres', 'semestres', 'modules', 'locals'));
     }
-    /**
-     * Update the specified resource in storage.
-     */
+
     public function update(Request $request, string $id)
     {
         $request->validate([
-            'jour' => 'required|string',
-            'heure_deb' => 'required',
-            'heure_fin' => 'required|after:heure_deb',
-            'prof_id' => 'required|exists:profs,id',
+            'jour'       => 'required|string',
+            'heure_deb'  => 'required',
+            'heure_fin'  => 'required|after:heure_deb',
+            'prof_id'    => 'required|exists:profs,id',
             'filiere_id' => 'required|exists:filieres,id',
-            'semestre_id' =>'required|exists:semestre,id',
-            'module_id' => 'required|exists:modules,id'
-
+            'semestre_id'=> 'required|exists:semestres,id',
+            'module_id'  => 'required|exists:modules,id',
+            'local_id'   => 'nullable|exists:locals,id',
         ]);
+
         $seance = Seance::findOrFail($id);
-        $seance->jour = $request->jour;
-        $seance->heure_deb = $request->heure_deb;
-        $seance->heure_fin = $request->heure_fin;
-        $seance->prof_id = $request->prof_id;
+        $seance->jour       = $request->jour;
+        $seance->heure_deb  = $request->heure_deb;
+        $seance->heure_fin  = $request->heure_fin;
+        $seance->prof_id    = $request->prof_id;
         $seance->filiere_id = $request->filiere_id;
-        $seance->semestre_id = $request->semestre_id;
-        $seance->module_id = $request->module_id;
+        $seance->semestre_id= $request->semestre_id;
+        $seance->module_id  = $request->module_id;
+        $seance->local_id   = $request->local_id;
         $seance->save();
 
         return redirect()->route('seances.index')->with('success', 'Séance modifiée !');
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
     public function destroy(string $id)
     {
-        $seance = Seance::findOrFail($id)->delete();
-
+        Seance::findOrFail($id)->delete();
         return redirect()->route('seances.index')->with('success', 'Séance supprimée !');
     }
 
-    /**
-     * Get modules for selected filiere via AJAX
-     */
-    public function getModulesByFiliere($filiereId)
+    public function getModulesByFiliereAndSemestre($filiereId, $semestreId)
     {
-        $modules = Module::whereHas('etape.filiere', function($q) use ($filiereId) {
-            $q->where('id', $filiereId);
-        })->get();
-
+        $modules = Module::where('filiere_id', $filiereId)
+                         ->where('semestre_id', $semestreId)
+                         ->get();
         return response()->json($modules);
     }
 
-    private function mapJourToNumber($jour)
+    public function getSemestresByFiliere($filiereId)
+    {
+        $semestres = Semestre::where('filiere_id', $filiereId)->get();
+        return response()->json($semestres);
+    }
 
+    private function mapJourToNumber($jour)
     {
         return [
             'Dimanche' => 0,
-            'Lundi' => 1,
-            'Mardi' => 2,
+            'Lundi'    => 1,
+            'Mardi'    => 2,
             'Mercredi' => 3,
-            'Jeudi' => 4,
+            'Jeudi'    => 4,
             'Vendredi' => 5,
-            'Samedi' => 6,
-        ][$jour];
+            'Samedi'   => 6,
+        ][$jour] ?? 1;
     }
 }

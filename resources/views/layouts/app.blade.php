@@ -9,253 +9,201 @@
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family:'Segoe UI' sans-serif;
+            font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
 
         body{
-            display: flex;
-            min-height: 100vh;
             background: #f0f2f5;
+            min-height: 100vh;
         }
+
         /* sidebar */
         .sidebar {
             width: 250px;
             background: #1a237e;
             color: white;
-            padding: 20px 0;
             position: fixed;
+            top: 0;
+            left: 0;
             height: 100vh;
             overflow-y: auto;
+            z-index: 1000;
+            transition: transform 0.3s ease;
         }
         .sidebar .logo{
             text-align: center;
-            padding: 20px;
+            padding: 25px 20px;
             border-bottom: 1px solid rgba(255,255,255,0.1);
-            margin-bottom: 20px;
+            margin-bottom: 10px;
         }
-        .sidebar .logo h2{
-            font-size: 18px;
+        .sidebar .logo a {
+            text-decoration: none;
             color: white;
         }
+        .sidebar .logo h2{
+            font-size: 22px;
+            font-weight: 700;
+        }
         .sidebar .logo p{
-            font-size: 12px;
+            font-size: 11px;
             color: rgba(255,255,255,0.6);
-            margin-top: 6px;
+            margin-top: 4px;
         }
         .sidebar a{
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 12px;
             padding: 12px 25px;
             color: rgba(255,255,255,0.8);
             text-decoration: none;
-            transition: all 0.3s;
+            transition: all 0.2s;
             font-size: 14px;
         }
         .sidebar a:hover{
             background: rgba(255,255,255,0.1);
             color: white;
-            padding-left: 35px;
         }
         .sidebar a.active{
-            background: rgba(255,255,255,0.2);
+            background: rgba(255,255,255,0.15);
             color: white;
             border-left: 4px solid #fff;   
         }
         .sidebar .menu-title{
-            padding: 10px 25px;
+            padding: 20px 25px 10px;
             font-size: 11px;
             color: rgba(255,255,255,0.4);
             text-transform: uppercase;
-            letter-spacing: 1px;
-            margin-top: 10px;
+            letter-spacing: 1.2px;
         }
-        /* main content*/
+
+        /* main content area */
         .main{
-            margin-left: 250px;
-            flex: 1;
+            margin-left: 250px; /* Espace pour la sidebar */
+            min-height: 100vh;
             display: flex;
             flex-direction: column;
+            transition: margin-left 0.3s ease;
         }
-        /*navbar*/
+
+        /* navbar */
         .navbar{
             background: white;
-            padding: 15px 30px;
+            height: 70px;
+            padding: 0 30px;
             display: flex;
-            justify-content:space-between;
+            justify-content: space-between;
             align-items: center;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-            position: sticky;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            position: fixed;
             top: 0;
-            z-index: 100;
+            right: 0;
+            left: 250px; /* Commence après la sidebar */
+            z-index: 900;
+            transition: left 0.3s ease;
         }
         .navbar h1{
             font-size: 20px;
             color: #1a237e;
+            font-weight: 600;
         }
         .navbar .user{
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 12px;
             font-size: 14px;
-            color: #555;
+            font-weight: 500;
         }
-        .navbar .user span{
+        .navbar .user .avatar{
             background: #1a237e;
             color: white;
-            width: 35px;
-            height: 35px;
+            width: 38px;
+            height: 38px;
             border-radius: 50%;
-            align-items: center;
             display: flex;
+            align-items: center;
             justify-content: center;
             font-weight: bold;
         }
-        /* content */
+
+        /* content padding top for fixed navbar */
         .content{
             padding: 30px;
+            margin-top: 70px; /* Hauteur de la navbar */
             flex: 1;
         }
-        /* cards */
+
+        /* Components */
         .card{
             background: white;
-            border-radius: 10px;
+            border-radius: 12px;
             padding: 25px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
-            margin-bottom: 20px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+            margin-bottom: 25px;
         }
-        .card-header{
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-        }
-        .card-header h5{
-            font-size: 18px;
-            color: #1a237e;
-            margin: 0;
-        }
-        .card-header h2{
-            font-size: 18px;
-            color: #1a237e;
-        }
-        .card-body {
-            padding: 0;
-        }
-        .text-muted {
-            color: #999;
-        }
-        .btn-sm {
-            padding: 5px 10px;
-            font-size: 12px;
-        }
-        /* buttons */
         .btn{
-            padding: 8px;
+            padding: 10px 18px;
             border: none;
-            border-radius: 6px;
+            border-radius: 8px;
             font-size: 14px;
+            font-weight: 500;
             cursor: pointer;
             text-decoration: none;
-            display: inline-block;
-            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.2s;
         }
-        .btn-primary{
-            background: #1a237e;
-            color: white;
+        .btn-primary{ background: #1a237e; color: white; }
+        .btn-primary:hover{ background: #283593; transform: translateY(-1px); }
+        .btn-secondary{ background: #e0e0e0; color: #333; }
+        
+        .hamburger {
+            display: none;
+            flex-direction: column;
+            gap: 5px;
+            cursor: pointer;
+            background: none;
+            border: none;
         }
-        .btn-primary:hover{
-            background: #5765cf;
-        }
-        .btn-danger{
-            background: #e53935;
-            color: white;
-        }
-        .btn-danger:hover{
-            background: #c62828;
-        }
-        .btn-success{
-            background: #43a047;
-            color: white;
-        }
-        /* table */
-        table{
-            width :100%;
-            border-collapse: collapse;
-        }
-        table th{
-            background: #f5f5f5;
-            padding: 12px 15px;
-            text-align: left;
-            color: #555;
-            border-bottom: 2px solid #eee;
-        }
-        table td{
-            padding: 12px 15px;
-            font-size: 14px;
-            color: #333;
-            border-bottom: 1px solid #f0f0f0;
-        }
-        table tr:hover{
-            background: #f9f9f9;
-        }
-        /* form */
-        .form-group{
-            margin-bottom: 20px;
-        }
-        .form-group label{
+        .hamburger span {
             display: block;
-            margin-bottom: 8px;
-            font-size: 14px;
-            color: #555;
-            font-weight: 500;
+            width: 22px;
+            height: 2px;
+            background: #1a237e;
+            border-radius: 2px;
         }
-        .form-group input,
-        .form-group select{
-            width: 100%;
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 6px;
-            font-size: 14px;
-            transition: border 0.3s;
+
+        .sidebar-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 950;
         }
-        .form-group input:focus,
-        .form-group select:focus{
-            outline: none;
-            border-color: #1a237e;
-        }
-        /* alerts*/
-        .alert{
-            padding: 12px 20px;
-            border-radius: 6px;
-            margin-bottom: 20px;
-            font-size: 14px;
-        }
-        .alert-success {
-            background: #e8f5e9;
-            color: #2e7d32;
-            border-left: 4px solid #43a047;
-        }
-        .alert-danger{
-            background: #ffebee;
-            color: #c62828;
-            border-left: 4px solid #e53935;
+
+        /* Responsive */
+        @media (max-width: 992px) {
+            .sidebar { transform: translateX(-100%); }
+            .sidebar.open { transform: translateX(0); }
+            .main { margin-left: 0; }
+            .navbar { left: 0; }
+            .hamburger { display: flex; }
+            .sidebar-overlay.active { display: block; }
         }
     </style>
     @yield('style')
-
 </head>
 <body>
-    <!-- sideBar-->
-    <div class="sidebar">
+    <div class="sidebar" id="sidebar">
         <div class="logo">
-            <h2>UMPO</h2>
-            <p>Université Mohammed Premier Oujda</p>
+            <a href="{{ url('/') }}">
+                <h2>UMPO</h2>
+                <p>Université Mohammed Premier Oujda</p>
+            </a>
         </div>
-        <div class="menu-title">
-            Principal
-        </div>
-        <a href="{{ route('seances.index') }}">📅 Emploi du temps</a>
+        <div class="menu-title">Principal</div>
+        <a href="{{ route('seances.index') }}" class="{{ request()->routeIs('seances.*') ? 'active' : '' }}">📅 Emploi du temps</a>
+        
         <div class="menu-title">Administration</div>
         <a href="{{ route('composantes.index') }}">🏫 Composantes</a>
         <a href="{{ route('departements.index') }}">🏢 Départements</a>
@@ -263,30 +211,77 @@
         <a href="{{ route('semestres.index') }}">🎓 Semestres</a>
         <a href="{{ route('modules.index') }}">📖 Modules</a>
         <a href="{{ route('profs.index') }}">👨‍🏫 Professeurs</a>
+        
         <div class="menu-title">Locaux</div>
         <a href="{{ route('zones.index') }}">🗺️ Zones</a>
         <a href="{{ route('locals.index') }}">🚪 Locaux</a>
+
+        <div class="menu-title">Compte</div>
+        <a href="#" onclick="event.preventDefault(); document.getElementById('logout-form').submit();" style="color: #ff5252;">
+            🚪 Déconnexion
+        </a>
+        <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
+            @csrf
+        </form>
     </div>
 
-    <!--main-->
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
     <div class="main">
         <div class="navbar">
-            <h1>@yield('title', 'Tableau de bord')</h1>
+            <div style="display:flex; align-items:center; gap:15px;">
+                <button class="hamburger" id="hamburgerBtn">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </button>
+                <h1>@yield('title', 'Tableau de bord')</h1>
+            </div>
             <div class="user">
-                <span>A</span>
-                Admin
+                @auth
+                    <div class="avatar">{{ substr(Auth::user()->name, 0, 1) }}</div>
+                    <span>{{ Auth::user()->name }}</span>
+                @else
+                    <div class="avatar">?</div>
+                    <span>Invité</span>
+                @endauth
             </div>
         </div>
+        
         <div class="content">
             @if(session('success'))
-            <div class="alert alert-success">
-                ✅ {{ session('success') }}
-            </div>
+                <div style="background:#e8f5e9; color:#2e7d32; padding:15px; border-radius:8px; margin-bottom:20px; border-left:5px solid #4caf50;">
+                    ✅ {{ session('success') }}
+                </div>
             @endif
 
             @yield('content')
         </div>
     </div>
-@yield('script')
+
+    <script>
+        const hamburgerBtn = document.getElementById('hamburgerBtn');
+        const sidebar = document.getElementById('sidebar');
+        const overlay = document.getElementById('sidebarOverlay');
+
+        function toggleSidebar() {
+            sidebar.classList.toggle('open');
+            overlay.classList.toggle('active');
+        }
+
+        hamburgerBtn.addEventListener('click', toggleSidebar);
+        overlay.addEventListener('click', toggleSidebar);
+
+        // Close sidebar on link click (mobile)
+        sidebar.querySelectorAll('a').forEach(link => {
+            link.addEventListener('click', () => {
+                if (window.innerWidth <= 992) {
+                    sidebar.classList.remove('open');
+                    overlay.classList.remove('active');
+                }
+            });
+        });
+    </script>
+    @yield('script')
 </body>
 </html>

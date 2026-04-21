@@ -25,6 +25,8 @@ class ModuleController extends Controller
 
     public function store(Request $request)
     {
+
+        // dd($request->all());
         $request->validate([
             'nom' => 'required|string|max:255',
             'filiere_id' => 'required|exists:filieres,id',
@@ -52,7 +54,7 @@ class ModuleController extends Controller
         $request->validate([
             'nom' => 'required|string|max:255',
             'filiere_id' => 'required|exists:filieres,id',
-            'semestre_id' => 'required|exists:semestre,id'
+            'semestre_id' => 'required|exists:semestres,id'
         ]);
         $module = Module::findOrFail($id);
         $module->nom = $request->nom;
