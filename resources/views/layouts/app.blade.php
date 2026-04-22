@@ -133,12 +133,16 @@
         }
 
         /* Components */
-        .card{
+        .card {
             background: white;
             border-radius: 12px;
             padding: 25px;
             box-shadow: 0 4px 20px rgba(0,0,0,0.05);
             margin-bottom: 25px;
+            overflow-x: auto; /* Handle large tables automatically */
+        }
+        @media (max-width: 768px) {
+            .card { padding: 15px; }
         }
         .btn{
             padding: 10px 18px;
@@ -158,11 +162,18 @@
         .btn-secondary{ background: #e0e0e0; color: #333; }
         
         /* Tables (Global) */
+        .table-responsive {
+            width: 100%;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            margin-bottom: 1rem;
+            border-radius: 12px;
+        }
         table {
             width: 100%;
             border-collapse: collapse;
-            margin-top: 15px;
             font-size: 14px;
+            white-space: nowrap; /* Prevent text wrapping in headers */
         }
         table th, table td {
             padding: 12px 15px;

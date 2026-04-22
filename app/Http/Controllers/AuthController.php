@@ -11,7 +11,7 @@ class AuthController extends Controller
     public function showLogin()
     {
         if (Auth::check()) {
-            return redirect()->route('seances.index');
+            return redirect()->route('dashboard');
         }
         return view('auth.login');
     }
@@ -30,13 +30,13 @@ class AuthController extends Controller
             if ($user) {
                 Auth::login($user);
                 $request->session()->regenerate();
-                return redirect()->intended('seances');
+                return redirect()->intended('/');
             }
         }
 
         if (Auth::attempt($credentials)) {
             $request->session()->regenerate();
-            return redirect()->intended('seances');
+            return redirect()->intended('/');
         }
 
         return back()->withErrors([
