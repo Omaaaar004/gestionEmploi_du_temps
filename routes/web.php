@@ -84,10 +84,8 @@ Route::get('/delete-user', function(\Illuminate\Http\Request $request) {
 
 
 
-// Redirection de la racine
-Route::get('/', function() {
-    return redirect()->route('seances.index');
-});
+// Route pour le Dashboard
+Route::get('/', [\App\Http\Controllers\DashboardController::class, 'index'])->middleware('auth')->name('dashboard');
 
 // Routes protégées
 Route::middleware(['auth'])->group(function () {

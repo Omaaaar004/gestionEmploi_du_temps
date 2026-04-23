@@ -10,61 +10,80 @@
     </div>
     <form action="{{ route('seances.store') }}" method="POST">
         @csrf
+
+        @if(session('error_list'))
+            <div style="background: #ffebee; color: #c62828; padding: 15px; border-radius: 8px; margin-bottom: 20px; border: 1px solid #ef9a9a;">
+                <h4 style="margin-top:0;">🚫 Conflit détecté !</h4>
+                <ul style="margin-bottom:0;">
+                    @foreach(session('error_list') as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+        @endif
         <div class="form-group">
             <label>Jour</label>
             <select name="jour" required>
                 <option value="">-- Choisir un jour --</option>
                 @foreach(['Lundi','Mardi','Mercredi','Jeudi','Vendredi','Samedi'] as $j)
-                    <option value="{{ $j }}">{{ $j }}</option>
+                    <option value="{{ $j }}" {{ old('jour') == $j ? 'selected' : '' }}>{{ $j }}</option>
                 @endforeach
             </select>
+            @error('jour') <span class="text-danger" style="font-size:12px;">{{ $message }}</span> @enderror
         </div>
         <div class="form-group">
             <label>Heure Début</label>
-            <input type="time" name="heure_deb" required>
+            <input type="time" name="heure_deb" value="{{ old('heure_deb') }}" required>
+            @error('heure_deb') <span class="text-danger" style="font-size:12px;">{{ $message }}</span> @enderror
         </div>
         <div class="form-group">
             <label>Heure Fin</label>
-            <input type="time" name="heure_fin" required>
+            <input type="time" name="heure_fin" value="{{ old('heure_fin') }}" required>
+            @error('heure_fin') <span class="text-danger" style="font-size:12px;">{{ $message }}</span> @enderror
         </div>
         <div class="form-group">
             <label>Filière</label>
             <select id="filiere-select" name="filiere_id" required>
                 <option value="">-- Choisir une filière --</option>
                 @foreach($filieres as $filiere)
-                    <option value="{{ $filiere->id }}">{{ $filiere->nom }}</option>
+                    <option value="{{ $filiere->id }}" {{ old('filiere_id') == $filiere->id ? 'selected' : '' }}>{{ $filiere->nom }}</option>
                 @endforeach
             </select>
+            @error('filiere_id') <span class="text-danger" style="font-size:12px;">{{ $message }}</span> @enderror
         </div>
         <div class="form-group">
             <label>Semestre</label>
             <select name="semestre_id" id="semestre-select" disabled required>
                 <option value="">-- Choisir d'abord une filière --</option>
             </select>
+            @error('semestre_id') <span class="text-danger" style="font-size:12px;">{{ $message }}</span> @enderror
         </div>
         <div class="form-group">
             <label>Module</label>
             <select id="module-select" name="module_id" required disabled>
                 <option value="">-- Sélectionnez d'abord un semestre --</option>
             </select>
+            @error('module_id') <span class="text-danger" style="font-size:12px;">{{ $message }}</span> @enderror
         </div>
         <div class="form-group">
             <label>Professeur</label>
             <select name="prof_id" required>
                 <option value="">-- Choisir un professeur --</option>
                 @foreach($profs as $prof)
-                    <option value="{{ $prof->id }}">{{ $prof->nom }} {{ $prof->prenom }}</option>
+                    <option value="{{ $prof->id }}" {{ old('prof_id') == $prof->id ? 'selected' : '' }}>{{ $prof->nom }} {{ $prof->prenom }}</option>
                 @endforeach
             </select>
+            @error('prof_id') <span class="text-danger" style="font-size:12px;">{{ $message }}</span> @enderror
         </div>
         <div class="form-group">
             <label>Local (Optionnel)</label>
             <select name="local_id">
                 <option value="">-- Choisir un local --</option>
                 @foreach($locals as $local)
-                    <option value="{{ $local->id }}">{{ $local->nom_local }}</option>
+                    <option value="{{ $local->id }}" {{ old('local_id') == $local->id ? 'selected' : '' }}>{{ $local->nom_local }}</option>
                 @endforeach
             </select>
+            @error('local_id') <span class="text-danger" style="font-size:12px;">{{ $message }}</span> @enderror
         </div>
         
         <button type="submit" class="btn btn-primary">💾 Enregistrer la séance</button>

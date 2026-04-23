@@ -157,6 +157,51 @@
         .btn-primary:hover{ background: #283593; transform: translateY(-1px); }
         .btn-secondary{ background: #e0e0e0; color: #333; }
         
+        /* Tables (Global) */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+            font-size: 14px;
+        }
+        table th, table td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+        table th {
+            background: #f8f9fa;
+            color: #333;
+            font-weight: 600;
+        }
+        table tbody tr:hover {
+            background: #f8fafc;
+        }
+
+        /* Forms (Global) */
+        .form-group {
+            margin-bottom: 15px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+            color: #333;
+            font-size: 14px;
+        }
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 10px 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: border-color 0.2s;
+        }
+        .form-group input:focus, .form-group select:focus {
+            outline: none;
+            border-color: #1a237e;
+        }
+
         .hamburger {
             display: none;
             flex-direction: column;
@@ -202,6 +247,7 @@
             </a>
         </div>
         <div class="menu-title">Principal</div>
+        <a href="{{ route('dashboard') }}" class="{{ request()->routeIs('dashboard') ? 'active' : '' }}">📊 Tableau de bord</a>
         <a href="{{ route('seances.index') }}" class="{{ request()->routeIs('seances.*') ? 'active' : '' }}">📅 Emploi du temps</a>
         
         <div class="menu-title">Administration</div>

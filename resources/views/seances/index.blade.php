@@ -137,7 +137,7 @@
         <div class="form-group" style="margin:0; flex:1;">
             <label>Filière</label>
             <select name="filiere_id">
-                <option value="">-- Toutes les filières --</option>
+                <option value="">-- Sélectionner une filière --</option>
                 @foreach ($filieres as $filiere)
                     <option value="{{ $filiere->id }}" {{ request('filiere_id') == $filiere->id ? 'selected' : '' }}>
                         {{ $filiere->nom }}
@@ -148,7 +148,7 @@
         <div class="form-group" style="margin:0; flex:1;">
             <label>Semestre</label>
             <select name="semestre_id">
-                <option value="">-- Tous les semestres --</option>
+                <option value="">-- Sélectionner un semestre --</option>
                 @foreach ($semestres as $semestre)
                     <option value="{{ $semestre->id }}" {{ request('semestre_id') == $semestre->id ? 'selected' : '' }}>
                         {{ $semestre->nom }}
@@ -171,6 +171,30 @@
         </div>
     </form>
 </div>
+
+@php
+    $aTenteDeFiltrer = request()->has('view');
+@endphp
+
+@if(!$aTenteDeFiltrer)
+    {{-- État initial : Premier chargement --}}
+    <div style="background: #e3f2fd; color: #0d47a1; padding: 15px; border-radius: 8px; margin-bottom: 20px; border-left: 5px solid #1a237e;">
+        ℹ️ <strong>Bienvenue :</strong> Veuillez sélectionner une <strong>filière</strong> et un <strong>semestre</strong> pour afficher l'emploi du temps.
+    </div>
+@elseif(!request('filiere_id') && !request('semestre_id'))
+    {{-- Erreur : Clic sur filtrer sans aucun choix --}}
+    <div style="background: #ffebee; color: #c62828; padding: 15px; border-radius: 8px; margin-bottom: 20px; border-left: 5px solid #d32f2f; border: 1px solid #ffcdd2;">
+        🚫 <strong>Erreur :</strong> Vous n'avez rien sélectionné ! Veuillez choisir une filière et un semestre avant de filtrer.
+    </div>
+@elseif(!request('filiere_id') || !request('semestre_id'))
+    {{-- Oubli : Un des deux manque --}}
+    <div style="background: #fff3e0; color: #e65100; padding: 15px; border-radius: 8px; margin-bottom: 20px; border-left: 5px solid #ff9800; border: 1px solid #ffcc80;">
+        ⚠️ <strong>Oubli détecté :</strong> 
+        @if(!request('filiere_id')) Vous avez oublié de choisir la <strong>Filière</strong>. @endif
+        @if(!request('semestre_id')) Vous avez oublié de choisir le <strong>Semestre</strong>. @endif
+        Les deux sont obligatoires.
+    </div>
+@endif
 
 @if(request('view') == 'list')
 {{-- ===== VUE LISTE ===== --}}
@@ -271,7 +295,9 @@
 <div class="card">
     <div class="card-header">
         <h5>📅 Grille Emploi du Temps (Jours × Heures)</h5>
-        <span style="font-size:13px; color:#888;">{{ $seances->count() }} séance(s)</span>
+        @if(request('filiere_id') && request('semestre_id'))
+            <span style="font-size:13px; color:#888;">{{ $seances->count() }} séance(s)</span>
+        @endif
     </div>
     <div class="timetable-wrapper">
         <table class="timetable">
