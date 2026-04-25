@@ -156,6 +156,17 @@
                 @endforeach
             </select>
         </div>
+        <div class="form-group" style="margin:0; flex:1;">
+            <label>👨‍🏫 Professeur</label>
+            <select name="prof_id">
+                <option value="">-- Sélectionner un professeur --</option>
+                @foreach ($profs as $p)
+                    <option value="{{ $p->id }}" {{ request('prof_id') == $p->id ? 'selected' : '' }}>
+                        {{ $p->nom }} {{ $p->prenom }}
+                    </option>
+                @endforeach
+            </select>
+        </div>
         <div style="display:flex; gap:10px; align-items:flex-end;">
             <div>
                 <label style="display:block;font-size:14px;color:#555;font-weight:500;margin-bottom:8px;">Vue</label>
@@ -179,20 +190,18 @@
 @if(!$aTenteDeFiltrer)
     {{-- État initial : Premier chargement --}}
     <div style="background: #e3f2fd; color: #0d47a1; padding: 15px; border-radius: 8px; margin-bottom: 20px; border-left: 5px solid #1a237e;">
-        ℹ️ <strong>Bienvenue :</strong> Veuillez sélectionner une <strong>filière</strong> et un <strong>semestre</strong> pour afficher l'emploi du temps.
+        ℹ️ <strong>Bienvenue :</strong> Veuillez sélectionner une <strong>filière + semestre</strong> OU un <strong>professeur</strong> pour afficher l'emploi du temps.
     </div>
-@elseif(!request('filiere_id') && !request('semestre_id'))
+@elseif(!request('filiere_id') && !request('semestre_id') && !request('prof_id'))
     {{-- Erreur : Clic sur filtrer sans aucun choix --}}
     <div style="background: #ffebee; color: #c62828; padding: 15px; border-radius: 8px; margin-bottom: 20px; border-left: 5px solid #d32f2f; border: 1px solid #ffcdd2;">
-        🚫 <strong>Erreur :</strong> Vous n'avez rien sélectionné ! Veuillez choisir une filière et un semestre avant de filtrer.
+        🚫 <strong>Erreur :</strong> Vous n'avez rien sélectionné ! Veuillez choisir un professeur ou un groupe (filière/semestre) avant de filtrer.
     </div>
-@elseif(!request('filiere_id') || !request('semestre_id'))
-    {{-- Oubli : Un des deux manque --}}
+@elseif(!request('prof_id') && (!request('filiere_id') || !request('semestre_id')))
+    {{-- Oubli : Un des deux manque pour le groupe, et pas de prof sélectionné --}}
     <div style="background: #fff3e0; color: #e65100; padding: 15px; border-radius: 8px; margin-bottom: 20px; border-left: 5px solid #ff9800; border: 1px solid #ffcc80;">
         ⚠️ <strong>Oubli détecté :</strong> 
-        @if(!request('filiere_id')) Vous avez oublié de choisir la <strong>Filière</strong>. @endif
-        @if(!request('semestre_id')) Vous avez oublié de choisir le <strong>Semestre</strong>. @endif
-        Les deux sont obligatoires.
+        Pour afficher par groupe, les deux (Filière et Semestre) sont obligatoires. Sinon, sélectionnez juste un <strong>Professeur</strong>.
     </div>
 @endif
 

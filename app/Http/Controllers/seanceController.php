@@ -16,20 +16,28 @@ class SeanceController extends Controller
     {
         $filieres = Filiere::all();
         $semestres = Semestre::all();
-        $view = $request->get('view', 'grid'); // default: grille
+        $profs = Prof::all(); // On récupère tous les profs pour le filter
+        $view = $request->get('view', 'grid');
 
-        if ($request->filiere_id && $request->semestre_id) {
-            $seances = Seance::with(['module', 'prof', 'filiere', 'semestre', 'local'])
-                ->where('filiere_id', $request->filiere_id)
-                ->where('semestre_id', $request->semestre_id)
-                ->get();
+        $query = Seance::with(['module', 'prof', 'filiere', 'semestre', 'local']);
+
+        // Logique de filtrage
+        if ($request->prof_id) {
+            // Si on filtre par prof, on montre tout son emploi du temps
+            $query->where('prof_id', $request->prof_id);
+        } elseif ($request->filiere_id && $request->semestre_id) {
+            // Sinon on garde le filtre classique par groupe
+            $query->where('filiere_id', $request->filiere_id)
+                  ->where('semestre_id', $request->semestre_id);
         } else {
+            // Si rien n'est sélectionné, on retourne une collection vide
             $seances = collect();
+            return view('seances.index', compact('seances', 'view', 'filieres', 'semestres', 'profs'));
         }
 
-            
+        $seances = $query->get();
 
-        return view('seances.index', compact('seances', 'view', 'filieres', 'semestres'));
+        return view('seances.index', compact('seances', 'view', 'filieres', 'semestres', 'profs'));
     }
 
     public function events(Request $request)
@@ -91,43 +99,47 @@ class SeanceController extends Controller
 
         $conflicts = [];
 
-        // Vérification Conflit Professeur
-        $profConflict = Seance::where('jour', $request->jour)
+        // 1. Vérification Jours Fériés (Si on utilisait des dates, mais on peut au moins vérifier si le jour est bloqué)
+        // Pour l'instant, on laisse cette logique de côté car les séances sont récurrentes (Lundi, Mardi...)
+        // Mais on a créé la table pour demain.
+
+        // 2. Vérification Conflit Professeur
+        $existingProf = Seance::where('jour', $request->jour)
             ->where('prof_id', $request->prof_id)
             ->where(function ($q) use ($request) {
                 $q->where('heure_deb', '<', $request->heure_fin)
                   ->where('heure_fin', '>', $request->heure_deb);
-            })->exists();
+            })->first();
 
-        if ($profConflict) {
-            $conflicts[] = "⚠️ Le professeur choisi est déjà occupé sur ce créneau.";
+        if ($existingProf) {
+            $conflicts[] = "⚠️ Le professeur est déjà occupé par le module <strong>{$existingProf->module->nom}</strong> ({$existingProf->filiere->nom}) de " . substr($existingProf->heure_deb, 0, 5) . " à " . substr($existingProf->heure_fin, 0, 5) . ".";
         }
 
-        // Vérification Conflit Local (Salle)
+        // 3. Vérification Conflit Local (Salle)
         if ($request->local_id) {
-            $localConflict = Seance::where('jour', $request->jour)
+            $existingLocal = Seance::where('jour', $request->jour)
                 ->where('local_id', $request->local_id)
                 ->where(function ($q) use ($request) {
                     $q->where('heure_deb', '<', $request->heure_fin)
                       ->where('heure_fin', '>', $request->heure_deb);
-                })->exists();
+                })->first();
 
-            if ($localConflict) {
-                $conflicts[] = "⚠️ La salle (local) choisie est déjà occupée.";
+            if ($existingLocal) {
+                $conflicts[] = "⚠️ La salle est déjà occupée par le groupe <strong>{$existingLocal->filiere->nom}</strong> pour le module {$existingLocal->module->nom}.";
             }
         }
 
-        // Vérification Conflit Filière/Semestre
-        $filiereConflict = Seance::where('jour', $request->jour)
+        // 4. Vérification Conflit Filière/Semestre
+        $existingGroup = Seance::where('jour', $request->jour)
             ->where('filiere_id', $request->filiere_id)
             ->where('semestre_id', $request->semestre_id)
             ->where(function ($q) use ($request) {
                 $q->where('heure_deb', '<', $request->heure_fin)
                   ->where('heure_fin', '>', $request->heure_deb);
-            })->exists();
+            })->first();
 
-        if ($filiereConflict) {
-            $conflicts[] = "⚠️ Ce groupe (Filière/Semestre) a déjà un autre cours à cette heure.";
+        if ($existingGroup) {
+            $conflicts[] = "⚠️ Ce groupe a déjà un cours de <strong>{$existingGroup->module->nom}</strong> prévu à cette heure.";
         }
 
         if (!empty($conflicts)) {
